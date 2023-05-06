@@ -42,40 +42,17 @@ public class ComparatorByResult implements Comparator<Player>{
         }
     }
 
-    private int compareStraight(Player o1, Player o2) {
+    public int compareStraight(Player o1, Player o2) {
         return Integer.compare(o1.getHighestStraight().getRank(), o2.getHighestStraight().getRank());
     }
 
 
-    private int compareTwoPairs(Player o1, Player o2) {
-        // Sort the pairs and kickers in each hand
-        o1.getHand().sort(Collections.reverseOrder());
-        o2.getHand().sort(Collections.reverseOrder());
-
-        // Find the higher pair in each hand
-        var cmp = Integer.compare(o2.getPair().getRank(), o1.getPair().getRank());
-        if(cmp != 0){
-            return cmp;
-        }
-
-        // Find the lower pair in each hand
-        cmp = Integer.compare(o2.getHand().get(2).getRank(), o1.getHand().get(2).getRank());
-        if(cmp != 0){
-            return cmp;
-        }
-
-        // Compare the kickers
-        cmp = compareHighestCards(o1, o2);
-        return cmp;
-
-    }
 
 
-    private int compareHighestCards(Player o1, Player o2) {
-        return Integer.compare(o2.getHighestCard(), o1.getHighestCard());
-    }
 
-    private int compareFourOfAKind(Player o1, Player o2) {
+
+
+    public int compareFourOfAKind(Player o1, Player o2) {
         int rank1 = o1.getFourKind().getRank();
         int rank2 = o2.getFourKind().getRank();
         int cmp = Integer.compare(rank2, rank1);
@@ -99,7 +76,7 @@ public class ComparatorByResult implements Comparator<Player>{
         return 0;
     }
 
-    private int compareFullHouse(Player o1, Player o2) {
+    public int compareFullHouse(Player o1, Player o2) {
         int o1ThreeKindRank = o1.getThreeKind().getRank();
         int o2ThreeKindRank = o2.getThreeKind().getRank();
 
@@ -112,17 +89,11 @@ public class ComparatorByResult implements Comparator<Player>{
         return Integer.compare(o2PairRank, o1PairRank);
     }
 
-    private int comparePair(Player o1, Player o2) {
 
-        Card pair1 = o1.getPair();
-        Card pair2 = o2.getPair();
 
-        return comparePairOrTriple(pair1, pair2, o1, o2);
-
-    }
-
-    private int comparePairOrTriple(Card player1Pairs, Card player2Pairs, Player o1, Player o2) {
+    public int comparePairOrTriple(Card player1Pairs, Card player2Pairs, Player o1, Player o2) {
         int cmp = Integer.compare(player1Pairs.getRank(), player2Pairs.getRank());
+        //return if pairs or triples are not same
         if(cmp != 0){
             return cmp;
         }
@@ -134,8 +105,7 @@ public class ComparatorByResult implements Comparator<Player>{
         List<Card> remaining2 = new ArrayList<>(hand2);
         remaining1.remove(player1Pairs);
         remaining2.remove(player2Pairs);
-        remaining1.sort(Collections.reverseOrder());
-        remaining2.sort(Collections.reverseOrder());
+
 
         for(int i = 0; i < 2; i++){
             cmp = Integer.compare(remaining2.get(i).getRank(), remaining1.get(i).getRank());
@@ -147,13 +117,48 @@ public class ComparatorByResult implements Comparator<Player>{
         return 0;
 
     }
-
-    private int compareThreeOfAKind(Player o1, Player o2) {
+    public int compareThreeOfAKind(Player o1, Player o2) {
         Card threeOfAKind1 = o1.getThreeKind();
         Card threeOfAKind2 = o2.getThreeKind();
 
         return comparePairOrTriple(threeOfAKind1, threeOfAKind2, o1, o2);
     }
 
+    public int compareTwoPairs(Player o1, Player o2) {
+        // Sort the pairs and kickers in each hand
+        o1.getHand().sort(Collections.reverseOrder());
+        o2.getHand().sort(Collections.reverseOrder());
+
+        // Find the higher pair in each hand
+        var cmp = Integer.compare(o2.getPair().getRank(), o1.getPair().getRank());
+        if(cmp != 0){
+            return cmp;
+        }
+
+        // Find the lower pair in each hand
+        cmp = Integer.compare(o2.getHand().get(2).getRank(), o1.getHand().get(2).getRank());
+        if(cmp != 0){
+            return cmp;
+        }
+
+        // Compare the kickers
+        cmp = compareHighestCards(o1, o2);
+        return cmp;
+
+    }
+
+    public int comparePair(Player o1, Player o2) {
+
+        Card pair1 = o1.getPair();
+        Card pair2 = o2.getPair();
+
+        return comparePairOrTriple(pair1, pair2, o1, o2);
+
+    }
+
+    public int compareHighestCards(Player o1, Player o2) {
+        return Integer.compare(o1.getHighestCard(), o2.getHighestCard());
+
+    }
 }
 
