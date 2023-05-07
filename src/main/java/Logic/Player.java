@@ -239,7 +239,7 @@ public class Player{
     @Override
     public String toString() {
 
-        return String.format("%s,\tchips: %d , role: %s", name, chips, role);
+        return String.format("%s [%s:%s] %s |", name, hand.get(0).getRank(), hand.get(1).getRank(), cRank);
 
     }
 

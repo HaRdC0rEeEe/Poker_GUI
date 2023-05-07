@@ -10,15 +10,17 @@ public class ComparatorByResult implements Comparator<Player>{
     //https://upswingpoker.com/who-wins-if-two-players-have-the-same-hand-in-poker/
     //when players have same pair, their second card in hand wins if it is higher
     //https://www.adda52.com/poker/poker-rules/cash-game-rules/tie-breaker-rules
+    //o1 < o2 == -1,
+    //o1 > o2 == 1,
     @Override
     public int compare(Player o1, Player o2) {
         //first compare by rank results
-        int rank_p1 = o1.getRank();
-        int rank_p2 = o2.getRank();
+        int o1Rank = o1.getRank();
+        int o2Rank = o2.getRank();
 
-        if(rank_p1 < rank_p2)
+        if(o1Rank > o2Rank)
             return 1;
-        else if(rank_p1 > rank_p2)
+        else if(o1Rank < o2Rank)
             return -1;
         else{
 
@@ -108,7 +110,7 @@ public class ComparatorByResult implements Comparator<Player>{
 
 
         for(int i = 0; i < 2; i++){
-            cmp = Integer.compare(remaining2.get(i).getRank(), remaining1.get(i).getRank());
+            cmp = Integer.compare(remaining1.get(i).getRank(), remaining2.get(i).getRank());
             if(cmp != 0){
                 return cmp;
             }
