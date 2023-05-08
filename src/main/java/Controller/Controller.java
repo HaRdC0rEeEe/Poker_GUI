@@ -30,10 +30,13 @@ public class Controller{
         this.choicesPanel = choicesPanel;
         this.game = game;
 
+        //display cards of current players
         for(HandPanel p: handPanels
             ){
             p.updatePanel();
         }
+        //there is a case when MainPlayer can have pair in hand, therefore validate his hand and update panel
+        updatePanelAndEvaluate(game.getMainPlayer());
         initListeners();
     }
 
@@ -87,6 +90,7 @@ public class Controller{
 
         });
 
+        //TODO implement fold logic
         choicesPanel.getFoldBtn().addActionListener(e -> {
 
             game.removeCardsOnTable();
@@ -94,6 +98,7 @@ public class Controller{
         });
     }
 
+    //TODO replace this method with determineWinners method in test methods
     public List<Player> determineWinners(List<Player> players) {
         //keep adding players with 0 (same level) to list or reset if new 1 will be added
         List<Player> winners = new ArrayList<>();
@@ -118,7 +123,7 @@ public class Controller{
         player.getHandPanel().updatePanel();
     }
 
-
+    //simple name input for MainPlayer or second player if that will be the case in future (although it wouldn't make much sense to have two human players locally)
     private String nameValidation(boolean isFirstPlayer) {
         String message = "Please input nickname for %%% player";
 

@@ -28,7 +28,7 @@ public class Card{
         return cValue.getRank();
     }
 
-
+    //although Color of a card symbol is not needed in Poker, it could be useful in different card games
     private CardEnums.cColor setColorDependingOnSymbol(CardEnums.cSymbol sym) {
         if(sym.equals(CardEnums.cSymbol.SPADES) || sym.equals(CardEnums.cSymbol.CLUBS)){
             return CardEnums.cColor.BLACK;
@@ -39,13 +39,7 @@ public class Card{
 
     @Override
     public String toString() {
-        //return value_of_card.toString();
         return String.format("%s %s", cValue.toString(), cSymbol.toString());
     }
-
-    public boolean equals(Card obj) {
-        return (getRank() == obj.getRank());
-    }
-
 }
 

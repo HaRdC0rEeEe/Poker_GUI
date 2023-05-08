@@ -26,9 +26,8 @@ public class HandEvaluator implements Comparator<Player>{
         setDefaultState();
     }
 
-    public void setDefaultState() {
+    private void setDefaultState() {
         player.setWinner(false);
-        player.setClassificationRank(ClassificationRank.HIGH_CARD);
         player.setPair(null);
         isPair = false;
         isTriple = false;

@@ -66,7 +66,7 @@ public class Game{
         //after dealer has been set, set order of other players
         //setOtherRoles();
 
-        //sort players regarding their roles - in current version deprecated
+        //TODO fix sort players regarding their roles -
         //sortPlayersByRoles();
 
         //each player will recieve 2 cards
@@ -74,11 +74,10 @@ public class Game{
 
         //big and small blinds will place their bets, bets will be doubled every second match
         int smallBlind = (int) ((chips / 20) * ((Math.pow(numOfCurrentGame, 2)) + 1) / 2);
-
         //round0PayBlinds(smallBlind);
 
 
-        //main loop of one match
+        //main loop of one match, not needed in GUI
         //gameRounds();
 
 
@@ -109,7 +108,7 @@ public class Game{
 
         checkDealerOutOfBounds();
     }
-
+    //TODO rewrite this later
     private void checkDealerOutOfBounds() {
         //if at end of circle, set SB to first player
         if(indexOfDealer == players.size() + DECREMENT_MINUS_ONE)
@@ -119,7 +118,7 @@ public class Game{
         else setSmallAndBigBlinds(indexOfDealer, indexOfDealer == players.size() + DECREMENT_MINUS_TWO);
 
     }
-
+    //TODO rewrite this later
     private void setSmallAndBigBlinds(int indexOfDealer, boolean isOnePlaceBeforeDealer) {
         firstPlayer = players.get(indexOfDealer + INCREMENT_PLUS_ONE);
         firstPlayer.setRole(Player.player_role.SMALL_BLIND);
@@ -137,7 +136,7 @@ public class Game{
 
     }
 
-    ///TODO doesnt work for two players
+    ///TODO doesn't work for two players
     private void setOtherRoles() {
         Player temp_player = secondPlayer;
         int i = players.indexOf(secondPlayer);
@@ -152,8 +151,6 @@ public class Game{
             temp_player.setPlaying_order(counter);
         }
     }
-
-    ///TODO ALL IN - remove player with 0 chips at the beginning of next game
 
     private boolean hasRoundEnded() {
         int numOfPlayersChecked = 0;
@@ -204,15 +201,6 @@ public class Game{
 
     }
 
-    private void playRound(Player currentPlayer) {
-        System.out.println("Current player: " + currentPlayer.toString());
-        System.out.println();
-        currentPlayer.print_actions();
-        currentPlayer.choose_action(currentPlayer.get_action());
-        System.out.println();
-
-    }
-
     public void addToStatistics(ClassificationRank getcRank) {
 
         if(!statistics.isEmpty()){
@@ -250,6 +238,7 @@ public class Game{
         return rolledValues;
     }
 
+    //TODO rewrite or remove this later, not needed in GUI
     private void gameRounds() {
         printPlayers(false, false);
         System.out.println();
@@ -264,7 +253,7 @@ public class Game{
                     indexOfCurrentPlayer = 0;
 
                 Player current_player = players.get(indexOfCurrentPlayer);
-                playRound(current_player);
+                //playRound(current_player);
 
                 if(current_player.getBettingStatus() == Player.BETTING_STATUS.FOLDED){
                     players.remove(current_player);
@@ -286,7 +275,6 @@ public class Game{
 
             printPlayers(false, false);
             System.out.println();
-            printbank();
 
             //TEST
             if(players.size() == 1)
@@ -338,14 +326,11 @@ public class Game{
         }
     }
 
-    public void printbank() {
-        System.out.println("Chips in bank: " + BANK + "$");
-    }
-
     public void removeCardsOnTable() {
         cardsOnTable.clear();
     }
 
+    //used when testing HandEvaluator for multiple games in succession
     public void setDeck(Deck deck) {
         this.deck = deck;
     }

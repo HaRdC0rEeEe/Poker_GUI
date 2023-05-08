@@ -29,10 +29,8 @@ public class HighCardTest{
 
         // create an instance of the evaluator
         var ev = new HandEvaluator(player1, communityCards);
-        ev.setDefaultState();
         ev.evaulateClassificationRank();
         ev = new HandEvaluator(player2, communityCards);
-        ev.setDefaultState();
         ev.evaulateClassificationRank();
         var players = new ArrayList<>(List.of(player1, player2));
         setWinners(players);

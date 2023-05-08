@@ -3,8 +3,6 @@ package Logic;
 
 public enum ClassificationRank{
 
-
-
         ROYAL_FLUSH(11),
         STRAIGHT_FLUSH(10),
         FOURS(9),
@@ -27,9 +25,8 @@ public enum ClassificationRank{
             return rank;
         }
 
-
-
 }
+
 
 
 
