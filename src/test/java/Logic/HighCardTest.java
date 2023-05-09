@@ -1,5 +1,7 @@
 package Logic;
 
+import Enums.CardEnums;
+import Enums.ClassificationRank;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;

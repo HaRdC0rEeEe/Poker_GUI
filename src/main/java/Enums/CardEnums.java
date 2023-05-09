@@ -1,4 +1,4 @@
-package Logic;
+package Enums;
 
 public class CardEnums{
     public enum cValue{

@@ -1,5 +1,8 @@
 package Logic;
 
+import Enums.CardEnums;
+import Enums.ClassificationRank;
+
 import java.util.*;
 import java.util.stream.Collectors;
 

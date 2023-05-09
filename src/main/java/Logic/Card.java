@@ -1,5 +1,7 @@
 package Logic;
 
+import Enums.CardEnums;
+
 public class Card{
 
     private final CardEnums.cValue cValue;

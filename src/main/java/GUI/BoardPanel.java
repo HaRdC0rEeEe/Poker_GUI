@@ -31,7 +31,6 @@ public class BoardPanel extends HandPanel{
         setLayout(new GridBagLayout());
         layoutComponents();
 
-        //updatePanel();
     }
 
     public void updatePanel(ArrayList<Card> cardsOnTable) {
@@ -55,8 +54,7 @@ public class BoardPanel extends HandPanel{
     }
 
 
-    public void mouseEntered(MouseEvent e) {
-    }
+    public void mouseEntered(MouseEvent e) {}
 }
 
 

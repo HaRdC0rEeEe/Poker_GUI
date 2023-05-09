@@ -1,5 +1,8 @@
 package Logic;
 
+import Enums.BettingStatus;
+import Enums.ClassificationRank;
+import Enums.PlayerRole;
 import GUI.HandPanel;
 
 import java.util.*;
@@ -10,13 +13,13 @@ import static Logic.Game.HIGHEST_BET;
 public class Player{
 
     public static final Scanner sc = new Scanner(System.in);
-    private static boolean has_not_yet_been_raised = false;
+    private static boolean hasNotBeenRaised = false;
     private final String name;
     private final List<Card> hand = new ArrayList<>();
-    private BETTING_STATUS bettingStatus;
+    private BettingStatus bettingStatus;
     private int chips;
-    private Enum<?> role;
-    private int playing_order;
+    private PlayerRole role;
+    private int playingOrder;
     private int bet, totalBet;
     private ClassificationRank cRank;
     private Card threeKind;
@@ -33,10 +36,10 @@ public class Player{
 
     public Player() {
         Random r = new Random();
-        String[] pool_of_names = new String[]{"Amanda", "Peter", "Debilko", "Frajer", "Bruhhh", "Sajmon", "Arnošt", "Nicole", "Andyyy", "Sajmon", "Ferkoo", "Denisa"};
-        int x = r.nextInt(pool_of_names.length);
+        String[] poolOfNames = new String[]{"Amanda", "Peter", "Debilko", "Frajer", "Bruhhh", "Sajmon", "Arnošt", "Nicole", "Andyyy", "Sajmon", "Ferkoo", "Denisa"};
+        int x = r.nextInt(poolOfNames.length);
 
-        name = pool_of_names[x];
+        name = poolOfNames[x];
         cRank = ClassificationRank.HIGH_CARD;
     }
 
@@ -49,11 +52,11 @@ public class Player{
         return highestStraight;
     }
 
-    public BETTING_STATUS getBettingStatus() {
+    public BettingStatus getBettingStatus() {
         return bettingStatus;
     }
 
-    public void setBettingStatus(BETTING_STATUS bettingStatus) {
+    public void setBettingStatus(BettingStatus bettingStatus) {
         this.bettingStatus = bettingStatus;
     }
 
@@ -71,8 +74,8 @@ public class Player{
         return pair;
     }
 
-    protected void setPair(Card winning_card) {
-        pair = winning_card;
+    protected void setPair(Card winningCard) {
+        pair = winningCard;
     }
 
     protected void setClassificationRank(ClassificationRank cRank) {
@@ -106,24 +109,24 @@ public class Player{
         HIGHEST_BET += raisedBy;
         call();
 
-        setStatus(BETTING_STATUS.RAISED);
-        has_not_yet_been_raised = false;
+        setStatus(BettingStatus.RAISED);
+        hasNotBeenRaised = false;
     }
 
     protected void resetStatuses() {
-        has_not_yet_been_raised = false;
+        hasNotBeenRaised = false;
         HIGHEST_BET = 0;
         bet = 0;
         totalBet = 0;
-        bettingStatus = BETTING_STATUS.STILL_BETTING;
+        bettingStatus = BettingStatus.STILL_BETTING;
 
     }
 
     protected void resetAllStatuses() {
         resetStatuses();
         cRank = ClassificationRank.HIGH_CARD;
-        role = player_role.NONE;
-        playing_order = 0;
+        role = PlayerRole.NONE;
+        playingOrder = 0;
     }
 
     public int getChips() {
@@ -134,16 +137,16 @@ public class Player{
         this.chips = chips;
     }
 
-    public Enum<?> getRole() {
+    public PlayerRole getRole() {
         return role;
     }
 
-    public void setRole(Enum<?> role) {
+    public void setRole(PlayerRole role) {
         this.role = role;
     }
 
-    public void print_actions() {
-        if(has_not_yet_been_raised || totalBet == HIGHEST_BET){
+    public void printActions() {
+        if(hasNotBeenRaised || totalBet == HIGHEST_BET){
             System.out.println("[1] - > CHECK");
         } else{
             System.out.printf("[1] - > CALL (%d)\n", HIGHEST_BET - totalBet);
@@ -153,53 +156,53 @@ public class Player{
         System.out.println("[4] - > HAND");
     }
 
-    public void choose_action(int chosen_action) {
+    public void chooseAction(int chosenAction) {
 
-        switch(chosen_action){
+        switch(chosenAction){
             case 1:
-                if(has_not_yet_been_raised || totalBet == HIGHEST_BET){
+                if(hasNotBeenRaised || totalBet == HIGHEST_BET){
                     System.out.printf("%s has checked.\n", name);
-                    setStatus(BETTING_STATUS.CHECKED);
+                    setStatus(BettingStatus.CHECKED);
                 } else{
                     call();
-                    setStatus(BETTING_STATUS.CALLED);
+                    setStatus(BettingStatus.CALLED);
                     System.out.printf("%s has called %d chips.\n", name, bet);
                 }
                 break;
 
             case 2:
-                int raise = check_if_bet_is_okay();
+                int raise = checkIfBetIsOkay();
                 raise(raise);
                 System.out.printf("%s has raised by %d chips.\n", name, HIGHEST_BET);
                 break;
 
             case 3:
                 this.Fold();
-                setStatus(BETTING_STATUS.FOLDED);
+                setStatus(BettingStatus.FOLDED);
                 break;
 
             case 4:
                 System.out.println(getHand());
-                print_actions();
-                choose_action(this.get_action());
+                printActions();
+                chooseAction(this.getAction());
                 break;
         }
     }
 
-    protected int get_action() {
+    protected int getAction() {
 
         System.out.println("Choose your action: ");
-        int action = try_catch_input_mismatch_exception();
+        int action = tryCatchInputMismatchException();
 
         if(action > 4 || action <= 0){
             System.out.println("Incorrect action number");
             sc.next();
-            return get_action();
+            return getAction();
         }
         return action;
     }
 
-    protected int try_catch_input_mismatch_exception() {
+    protected int tryCatchInputMismatchException() {
         int n;
         try{
             n = sc.nextInt();
@@ -208,16 +211,16 @@ public class Player{
             // we must use sc.next() to discard token which caused exception
             System.out.println("Incorrect number, try again");
             sc.next();
-            return try_catch_input_mismatch_exception();
+            return tryCatchInputMismatchException();
         }
 
         return n;
     }
 
-    protected int check_if_bet_is_okay() {
+    protected int checkIfBetIsOkay() {
 
         System.out.println("Enter amount of your bet: ");
-        int tempBet = try_catch_input_mismatch_exception();
+        int tempBet = tryCatchInputMismatchException();
 
         //cant bet more than you have, hence ALL IN
         if(tempBet >= this.getChips()){
@@ -226,13 +229,13 @@ public class Player{
         } else if(tempBet <= 0){
             System.out.println("Incorrect number");
             sc.next();
-            return check_if_bet_is_okay();
+            return checkIfBetIsOkay();
         }
         return tempBet;
 
     }
 
-    private void setStatus(BETTING_STATUS bettingStatus) {
+    private void setStatus(BettingStatus bettingStatus) {
         this.bettingStatus = bettingStatus;
     }
 
@@ -255,21 +258,21 @@ public class Player{
         else return this.toString(withCards);
     }
 
-    protected void setPlaying_order(int newVal) {
+    protected void setPlayingOrder(int newVal) {
 
-        this.playing_order = newVal;
+        this.playingOrder = newVal;
     }
 
     protected int getPlayng_order() {
 
-        return this.playing_order;
+        return this.playingOrder;
     }
 
     public void addChips(int chips) {
         this.chips += chips;
     }
 
-    public Object getName() {
+    public String getName() {
         return this.name;
     }
 
@@ -306,27 +309,13 @@ public class Player{
     }
 
 
-    protected enum player_role{
-        DEALER, BIG_BLIND, SMALL_BLIND, NONE
-
-    }
-
-    protected enum BETTING_STATUS{
-        CALLED,
-        STILL_BETTING,
-        ALL_IN,
-        FOLDED,
-        CHECKED,
-        RAISED
-    }
-
 
 }
 
 class PlayerComparatorByPlayerRole implements Comparator<Player>{
     @Override
-    public int compare(Player o1, Player o2) {
-        return o1.getPlayng_order() - o2.getPlayng_order();
+    public int compare(Player p1, Player p2) {
+        return p1.getPlayng_order() - p2.getPlayng_order();
     }
 }
 

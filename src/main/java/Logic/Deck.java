@@ -1,11 +1,12 @@
 package Logic;
 
+import Enums.CardEnums;
+
 import java.util.*;
 
 public class Deck{
 
     private final Stack<Card> deck;
-
     public Deck() {
         deck = new Stack<>();
 

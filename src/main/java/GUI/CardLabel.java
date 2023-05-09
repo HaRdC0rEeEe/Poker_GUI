@@ -11,8 +11,8 @@ import java.io.IOException;
 import java.util.Objects;
 
 public class CardLabel extends JLabel{
-    private BufferedImage cardBack;
-    private BufferedImage image;
+    private final BufferedImage cardBack;
+    private final BufferedImage image;
 
     public CardLabel(Card card) {
         super();

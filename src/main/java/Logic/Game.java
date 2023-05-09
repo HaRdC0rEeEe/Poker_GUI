@@ -1,5 +1,9 @@
 package Logic;
 
+import Enums.BettingStatus;
+import Enums.ClassificationRank;
+import Enums.PlayerRole;
+
 import java.util.*;
 
 public class Game{
@@ -103,8 +107,8 @@ public class Game{
         if(indexOfDealer == players.size())
             indexOfDealer = 0;
         Player dealer = players.get(indexOfDealer);
-        dealer.setRole(Player.player_role.DEALER);
-        dealer.setPlaying_order(PLAYING_LAST);
+        dealer.setRole(PlayerRole.DEALER);
+        dealer.setPlayingOrder(PLAYING_LAST);
 
         checkDealerOutOfBounds();
     }
@@ -121,8 +125,8 @@ public class Game{
     //TODO rewrite this later
     private void setSmallAndBigBlinds(int indexOfDealer, boolean isOnePlaceBeforeDealer) {
         firstPlayer = players.get(indexOfDealer + INCREMENT_PLUS_ONE);
-        firstPlayer.setRole(Player.player_role.SMALL_BLIND);
-        firstPlayer.setPlaying_order(1);
+        firstPlayer.setRole(PlayerRole.SMALL_BLIND);
+        firstPlayer.setPlayingOrder(1);
 
         if(players.size() != 1){
             if(isOnePlaceBeforeDealer)
@@ -130,8 +134,8 @@ public class Game{
             else
                 secondPlayer = players.get(indexOfDealer + INCREMENT_PLUS_TWO);
 
-            secondPlayer.setRole(Player.player_role.BIG_BLIND);
-            secondPlayer.setPlaying_order(2);
+            secondPlayer.setRole(PlayerRole.BIG_BLIND);
+            secondPlayer.setPlayingOrder(2);
         }
 
     }
@@ -142,13 +146,13 @@ public class Game{
         int i = players.indexOf(secondPlayer);
         int counter = secondPlayer.getPlayng_order();
 
-        while(temp_player.getRole() != Player.player_role.DEALER){
+        while(temp_player.getRole() != PlayerRole.DEALER){
             i++;
             counter++;
             if(i >= players.size())
                 i = 0;
             temp_player = players.get(i);
-            temp_player.setPlaying_order(counter);
+            temp_player.setPlayingOrder(counter);
         }
     }
 
@@ -158,11 +162,11 @@ public class Game{
 
         for(Player p : players
         ){
-            if(p.getBettingStatus() == Player.BETTING_STATUS.STILL_BETTING)
+            if(p.getBettingStatus() == BettingStatus.STILL_BETTING)
                 return false;
-            if(p.getBettingStatus() == Player.BETTING_STATUS.CHECKED)
+            if(p.getBettingStatus() == BettingStatus.CHECKED)
                 numOfPlayersChecked++;
-            if(p.getBettingStatus() == Player.BETTING_STATUS.CALLED)
+            if(p.getBettingStatus() == BettingStatus.CALLED)
                 numOfPlayersCalled++;
         }
 
@@ -255,14 +259,14 @@ public class Game{
                 Player current_player = players.get(indexOfCurrentPlayer);
                 //playRound(current_player);
 
-                if(current_player.getBettingStatus() == Player.BETTING_STATUS.FOLDED){
+                if(current_player.getBettingStatus() == BettingStatus.FOLDED){
                     players.remove(current_player);
                     indexOfCurrentPlayer--;
-                } else if(current_player.getBettingStatus() == Player.BETTING_STATUS.RAISED){
+                } else if(current_player.getBettingStatus() == BettingStatus.RAISED){
                     for(Player p : players)
-                        p.setBettingStatus(Player.BETTING_STATUS.STILL_BETTING);
+                        p.setBettingStatus(BettingStatus.STILL_BETTING);
 
-                    current_player.setBettingStatus(Player.BETTING_STATUS.RAISED);
+                    current_player.setBettingStatus(BettingStatus.RAISED);
                 }
                 if(hasRoundEnded()){
                     resetStatuses(false);

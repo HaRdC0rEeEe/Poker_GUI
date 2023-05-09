@@ -23,8 +23,6 @@ public class HandPanel extends JPanel implements MouseListener{
         isVisible = false;
         isOpponent = true;
 
-        //updatePanel();
-
         addMouseListener(this);
 
         setVisible(true);

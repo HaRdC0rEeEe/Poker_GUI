@@ -33,8 +33,7 @@ public class MainFrame extends JFrame{
 
         playerPanels = new ArrayList<>();
         //add panels of opponent hands
-        for(Player p : game.getPlayers()
-            ){
+        for(Player p : game.getPlayers()){
                 playerPanels.add(new HandPanel(p));
         }
         game.getMainPlayer().getHandPanel().setIsOpponent(false);

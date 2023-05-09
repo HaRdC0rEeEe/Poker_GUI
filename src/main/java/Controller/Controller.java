@@ -5,7 +5,6 @@ import Logic.*;
 
 import javax.swing.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 
@@ -31,8 +30,7 @@ public class Controller{
         this.game = game;
 
         //display cards of current players
-        for(HandPanel p: handPanels
-            ){
+        for(HandPanel p : handPanels){
             p.updatePanel();
         }
         //there is a case when MainPlayer can have pair in hand, therefore validate his hand and update panel
@@ -53,8 +51,7 @@ public class Controller{
                 }
                 else{
                     gameNotEnd = false;
-                    for(Player currPlayer: game.getPlayers()
-                    ){
+                    for(Player currPlayer: game.getPlayers()){
                         currPlayer.getHandPanel().setIsOpponent(false);
                         currPlayer.getHandPanel().getCard1().unhideCard();
                         currPlayer.getHandPanel().getCard2().unhideCard();
@@ -63,8 +60,7 @@ public class Controller{
 
                     //javax.swing.Timer timer = new javax.swing.Timer(2000, arg0 -> {
 
-                        for(Player currPlayer: game.getPlayers()
-                        ){
+                        for(Player currPlayer: game.getPlayers()){
                             updatePanelAndEvaluate(currPlayer);
 
                             //System.out.println(currPlayer.getcRank());
