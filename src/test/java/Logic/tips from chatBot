@@ -1,0 +1,21 @@
+
+Using a SortedSet instead of sorting an ArrayList using ArrayList.sort(Comparator) has several benefits:
+
+Automatic Sorting:
+When using a SortedSet, the elements are automatically sorted as you add or remove them from the set.
+You don't need to explicitly call a sorting method each time you modify the set.
+This ensures that the elements are always in the correct sorted order without any extra effort.
+
+Efficient Insertion and Removal:
+SortedSet implementations, such as TreeSet, are optimized for efficient insertion and removal operations while maintaining the sorted order.
+These implementations use balanced tree structures, which provide logarithmic time complexity for these operations.
+In contrast, sorting an ArrayList using ArrayList.sort() has a time complexity of O(n log n).
+
+Deduplication: A SortedSet guarantees uniqueness of its elements.
+When adding elements to a SortedSet, duplicate elements are automatically discarded.
+This simplifies the task of maintaining unique elements, as you don't need to perform additional checks or filtering operations.
+
+Direct Access to Sorted Elements:
+With a SortedSet, you can directly access the elements in their sorted order using iterator methods,
+such as first(), last(), headSet(), tailSet(), and subSet().
+This can be useful when you need to retrieve elements within a specific range or access the minimum or maximum element.

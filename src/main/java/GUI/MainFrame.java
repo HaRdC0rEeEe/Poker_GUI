@@ -4,7 +4,6 @@ import Controller.Controller;
 import Logic.Game;
 import Logic.Player;
 
-
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
@@ -23,8 +22,8 @@ public class MainFrame extends JFrame{
 
     public MainFrame() {
         super("Game of Poker");
-        //Game game = new Game(10000, Arrays.asList(new Logic.Player("Peter"), new Logic.Player("2_BB"),new Logic.Player("3_CC"),new Logic.Player("4_CC"),new Logic.Player("5_CC"),new Logic.Player("6_CC")));
-         game = new Game(10000, Arrays.asList(new Logic.Player("Pepr"), new Logic.Player("Eve")));
+        game = new Game(10000, Arrays.asList(new Logic.Player("Peter"), new Logic.Player(), new Logic.Player(), new Logic.Player()));
+        //game = new Game(10000, Arrays.asList(new Logic.Player("Pepr"), new Logic.Player("Eve")));
 
         choicesPanel = new ChoicesPanel();
         boardPanel = new BoardPanel();
@@ -34,9 +33,9 @@ public class MainFrame extends JFrame{
         playerPanels = new ArrayList<>();
         //add panels of opponent hands
         for(Player p : game.getPlayers()){
-                playerPanels.add(new HandPanel(p));
+            playerPanels.add(new HandPanel(p));
+
         }
-        game.getMainPlayer().getHandPanel().setIsOpponent(false);
 
         new Controller(game, boardPanel, choicesPanel, playerPanels,new TimeLabel(""));
 
@@ -44,9 +43,9 @@ public class MainFrame extends JFrame{
     }
 
     private void layoutFrame() {
-        setSize(1200, 800);
-        //setExtendedState(JFrame.MAXIMIZED_BOTH);
-
+        //setSize(1200, 800);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setResizable(false);
         //setMinimumSize(new Dimension(boardPanel.getWidth() - 130, boardPanel.getHeight() + choicesPanel.getHeight() - 150));
 
         setLayout(new GridBagLayout());
@@ -58,26 +57,26 @@ public class MainFrame extends JFrame{
         gbc.weightx = 1;
         gbc.weighty = 1;
 
-        gbc.anchor = GridBagConstraints.SOUTHWEST;
-        for(Player player : game.getPlayers()
-            ){
-            parentPanel.add(player.getHandPanel(), gbc);
-            gbc.gridx++;
-        }
+        gbc.anchor = GridBagConstraints.WEST;
+        for(Player player : game.getPlayers()){
+            if(player != game.getMainPlayer()){
+                parentPanel.add(player.getHandPanel(), gbc);
+                gbc.gridx++;
+            }
 
-        gbc.gridx = game.getPlayers().size()/2;
+        }
+        parentPanel.add(game.getMainPlayer().getHandPanel(), gbc);
+
+
+        gbc.gridx = playerPanels.size() / 2;
         gbc.gridy++;
 
         gbc.anchor = GridBagConstraints.CENTER;
         parentPanel.add(boardPanel, gbc);
 
-        /*gbc.anchor = GridBagConstraints.SOUTH;
-        gbc.gridy++;
-        parentPanel.add(playerPanels.get(0));*/
 
         gbc.gridy++;
         parentPanel.add(choicesPanel, gbc);
-
 
 
         add(parentPanel);

@@ -103,34 +103,6 @@ public class ChoicesPanel extends JPanel{
         gc.gridx++;
         add(foldBtn, gc);
 
-        /*gc.gridy++;
-        gc.gridwidth = 2;
-        gc.gridx = 0;
-        add(resetDicesBtn, gc);
-
-        gc.anchor = GridBagConstraints.LINE_END;
-        gc.gridwidth = 1;
-        gc.gridx++;
-        add(passRoundBtn, gc);
-
-        gc.gridy++;
-        add(throwIntoStrongCombo, gc);
-
-        gc.gridx = 0;
-        gc.gridy++;
-
-        gc.anchor = GridBagConstraints.LINE_START;
-        gc.insets = new Insets(5, 10, 5, 5);
-        add(player1TimeLabel, gc);
-
-        gc.gridy++;
-        gc.insets = new Insets(5, 10, 5, 5);
-        add(player2TimeLabel, gc);
-
-        gc.gridx++;
-        gc.anchor = GridBagConstraints.LINE_END;
-        gc.insets = new Insets(5, 10, 5, 20);
-        add(highscoreLabel, gc);*/
 
     }
 

@@ -2,10 +2,9 @@ package Logic;
 
 import Enums.CardEnums;
 
-public class Card{
+public class Card implements Comparable<Card>{
 
     private final CardEnums.cValue cValue;
-    private final CardEnums.cColor cColor;
     private final CardEnums.cSymbol cSymbol;
 
     /**
@@ -15,7 +14,7 @@ public class Card{
     public Card(CardEnums.cValue value, CardEnums.cSymbol symbol) {
         cValue = value;
         cSymbol = symbol;
-        cColor = setColorDependingOnSymbol(cSymbol);
+        CardEnums.cColor cColor = setColorDependingOnSymbol(cSymbol);
     }
 
     public CardEnums.cValue getCardValue() {
@@ -42,6 +41,37 @@ public class Card{
     @Override
     public String toString() {
         return String.format("%s %s", cValue.toString(), cSymbol.toString());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+
+        if(obj == this){
+            return true;
+        }
+
+        if(!(obj instanceof Card other)){
+            return false;
+        }
+
+        return this.cValue.getRank() == other.cValue.getRank();
+
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + cValue.hashCode();
+
+        return result;
+    }
+
+    //compareTo method must implement every Comparable interface
+    @Override
+    public int compareTo(Card card) {
+
+        return Integer.compare(this.cValue.getRank(), card.cValue.getRank());
     }
 }
 

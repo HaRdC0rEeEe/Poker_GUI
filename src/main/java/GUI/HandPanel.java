@@ -1,8 +1,10 @@
 package GUI;
 
+import Enums.ClassificationRank;
 import Logic.Player;
 
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -15,6 +17,7 @@ public class HandPanel extends JPanel implements MouseListener{
     private Player player;
     private boolean isVisible;
     private boolean isOpponent;
+
     public HandPanel(Player player) {
         super();
 
@@ -27,50 +30,74 @@ public class HandPanel extends JPanel implements MouseListener{
 
         setVisible(true);
     }
-    public HandPanel() {}
 
-    public CardLabel getCard1() { return card1; }
-
-    public CardLabel getCard2() { return card2; }
-
-    public void setIsOpponent(boolean isOpponent) {
-        this.isOpponent = isOpponent;
+    public HandPanel() {
     }
+
+    public void setIsOpponent(boolean opponent) {
+        isOpponent = opponent;
+    }
+
+    public void revealCards() {
+        card1.unhideCard();
+        card2.unhideCard();
+    }
+
 
     @Override
     public void mouseClicked(MouseEvent e) {
     }
 
     @Override
-    public void mousePressed(MouseEvent e) {}
+    public void mousePressed(MouseEvent e) {
+    }
 
     @Override
-    public void mouseReleased(MouseEvent e) {}
+    public void mouseReleased(MouseEvent e) {
+    }
 
     public void mouseEntered(MouseEvent e) {
 
-        isVisible = !isVisible;
-        if(!isVisible && !isOpponent){
-            card1.unhideCard();
-            card2.unhideCard();
+        if(!isOpponent){
+            isVisible = !isVisible;
 
-        } else if (!isOpponent){
-            card1.hideCard();
-            card2.hideCard();
-
+            if(!isVisible)
+                revealCards();
+            else
+                hideCards();
         }
 
     }
 
-    public void mouseExited(MouseEvent e) {}
+    private void hideCards() {
+        card1.hideCard();
+        card2.hideCard();
+
+    }
+
+    public void mouseExited(MouseEvent e) {
+    }
 
 
     public void updatePanel() {
 
         if(isOpponent)
             setBorder(BorderFactory.createTitledBorder(player.getName() + ", " + player.getRole()));
+        else if(player.getcRank() == ClassificationRank.HIGH_COMMUNITY_CARD)
+            setBorder(BorderFactory.createTitledBorder(player.getName() + ", " + ClassificationRank.HIGH_CARD + ", " + player.getRole()));
+        else if(player.getcRank() == ClassificationRank.LOWERSTRAIGHT)
+            setBorder(BorderFactory.createTitledBorder(player.getName() + ", " + ClassificationRank.STRAIGHT + ", " + player.getRole()));
         else
             setBorder(BorderFactory.createTitledBorder(player.getName() + ", " + player.getcRank() + ", " + player.getRole()));
+
+        if(player.isWinner())
+            setBorder(BorderFactory.createTitledBorder(null,
+                    "Winner! " + player.getName() + ", " + player.getcRank(),
+                    TitledBorder.DEFAULT_POSITION,
+                    TitledBorder.ABOVE_TOP,
+                    new Font("Helvetica", Font.BOLD, 14),
+                    new Color(50, 150, 60)
+            ));
 
         layoutComponents();
         revalidate();
@@ -91,11 +118,8 @@ public class HandPanel extends JPanel implements MouseListener{
 
         card1.setSize(new Dimension(card1.getWidth() - 60, card1.getHeight() - 60));
 
-        if(isOpponent){
-            card1.hideCard();
-            card2.hideCard();
-        }
-
+        if(isOpponent)
+            hideCards();
 
     }
 }

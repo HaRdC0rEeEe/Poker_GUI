@@ -2,7 +2,6 @@ package GUI;
 
 
 import Logic.Card;
-import Logic.Game;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -28,6 +27,11 @@ public class BoardPanel extends HandPanel{
         Border outerBorder = BorderFactory.createEmptyBorder(5, 5, 5, 5);
         setBorder(BorderFactory.createCompoundBorder(outerBorder, innerBorder));
 
+
+        int labelWidth = 125 * 5; // new width of the JLabel in pixels
+        int labelHeight = 181; // new height of the JLabel in pixels
+
+        setPreferredSize(new Dimension(labelWidth + 30, labelHeight + 40));
         setLayout(new GridBagLayout());
         layoutComponents();
 
@@ -39,8 +43,7 @@ public class BoardPanel extends HandPanel{
         /*In summary, the updateUI() method is used to update the look and feel of a component.
         The repaint() and revalidate() methods are used to update the appearance and layout of a component, respectively.*/
         layoutComponents();
-        revalidate();
-        repaint();
+
 
     }
 

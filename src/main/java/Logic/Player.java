@@ -15,7 +15,8 @@ public class Player{
     public static final Scanner sc = new Scanner(System.in);
     private static boolean hasNotBeenRaised = false;
     private final String name;
-    private final List<Card> hand = new ArrayList<>();
+    private final List<Card> hand;
+    private ArrayList<Integer> flush;
     private BettingStatus bettingStatus;
     private int chips;
     private PlayerRole role;
@@ -26,19 +27,15 @@ public class Player{
     private Card fourKind;
     private HandPanel handPanel;
     private Card pair;
+    private Card secondPair;
     private Card highestStraight;
-
-    public boolean isWinner() {
-        return isWinner;
-    }
-
     private boolean isWinner = false;
-
     public Player() {
         Random r = new Random();
-        String[] poolOfNames = new String[]{"Amanda", "Peter", "Debilko", "Frajer", "Bruhhh", "Sajmon", "Arnošt", "Nicole", "Andyyy", "Sajmon", "Ferkoo", "Denisa"};
+        String[] poolOfNames = new String[]{"Amanda", "Peter", "Sajmon", "Arnošt", "Nicole"};
         int x = r.nextInt(poolOfNames.length);
 
+        hand = new ArrayList<>();
         name = poolOfNames[x];
         cRank = ClassificationRank.HIGH_CARD;
     }
@@ -46,6 +43,24 @@ public class Player{
     public Player(String name) {
         this.name = name;
         cRank = ClassificationRank.HIGH_CARD;
+        hand = new ArrayList<>();
+    }
+
+    public ArrayList<Integer> getFlush() {
+        return flush;
+    }
+
+    public void setFlush(ArrayList<Integer> flush) {
+
+        this.flush = flush;
+    }
+
+    public boolean isWinner() {
+        return isWinner;
+    }
+
+    public void setWinner(boolean winner) {
+        isWinner = winner;
     }
 
     public Card getHighestStraight() {
@@ -68,7 +83,9 @@ public class Player{
         return this.cRank;
     }
 
-    public int getRank() { return cRank.getValue();  }
+    public int getRank() {
+        return cRank.getValue();
+    }
 
     protected Card getPair() {
         return pair;
@@ -81,8 +98,6 @@ public class Player{
     protected void setClassificationRank(ClassificationRank cRank) {
         this.cRank = cRank;
     }
-
-    public void setWinner(boolean winner) {  isWinner = winner;  }
 
     protected void drawCard(Card drawnCard) {
         hand.add(drawnCard);
@@ -124,7 +139,6 @@ public class Player{
 
     protected void resetAllStatuses() {
         resetStatuses();
-        cRank = ClassificationRank.HIGH_CARD;
         role = PlayerRole.NONE;
         playingOrder = 0;
     }
@@ -241,8 +255,8 @@ public class Player{
 
     @Override
     public String toString() {
-
-        return String.format("%s [%s:%s] %s |", name, hand.get(0).getRank(), hand.get(1).getRank(), cRank);
+        return String.format("%s [%s:%s] %s", name, hand.get(0), hand.get(1), cRank);
+        //return String.format("%s [%s:%s] %s", name, hand.get(0).getRank(), hand.get(1).getRank(), cRank);
 
     }
 
@@ -263,7 +277,7 @@ public class Player{
         this.playingOrder = newVal;
     }
 
-    protected int getPlayng_order() {
+    protected int getPlayngOrder() {
 
         return this.playingOrder;
     }
@@ -300,22 +314,23 @@ public class Player{
         this.fourKind = fourKind;
     }
 
-    public int getHighestCard() {
-        return Math.max(hand.get(0).getRank(), hand.get(1).getRank());
-    }
-
     public void setBiggestStraight(Card card) {
         highestStraight = card;
     }
 
+    public Card getSecondPair() {
+        return secondPair;
+    }
 
-
+    public void setSecondPair(Card secondPair) {
+        this.secondPair = secondPair;
+    }
 }
 
 class PlayerComparatorByPlayerRole implements Comparator<Player>{
     @Override
     public int compare(Player p1, Player p2) {
-        return p1.getPlayng_order() - p2.getPlayng_order();
+        return p1.getPlayngOrder() - p2.getPlayngOrder();
     }
 }
 

@@ -1,19 +1,25 @@
 package Logic;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 public class ComparatorByResult implements Comparator<Player>{
 
-    //https://upswingpoker.com/who-wins-if-two-players-have-the-same-hand-in-poker/
-    //when players have same pair, their second card in hand wins if it is higher
-    //https://www.adda52.com/poker/poker-rules/cash-game-rules/tie-breaker-rules
-    //p1 < p2 == -1,
-    //p1 > p2 == 1,
+    final List<Card> communityCards = HandEvaluator.communityCards;
+    List<Card> hand1;
+    List<Card> hand2;
+    private Player p1;
+    private Player p2;
+
+    //https://www.youtube.com/watch?v=PCPvJy6b4iA&ab_channel=truepokerdealer
+
     @Override
     public int compare(Player p1, Player p2) {
+
+        this.p1 = p1;
+        this.p2 = p2;
+
         //first compare by rank results
         int p1Rank = p1.getRank();
         int p2Rank = p2.getRank();
@@ -23,138 +29,204 @@ public class ComparatorByResult implements Comparator<Player>{
         else if(p1Rank < p2Rank)
             return -1;
         else{
-
             ///compare rare cases when players have same ranks
+            hand1 = p1.getHand();
+            hand2 = p2.getHand();
 
             var cRank = p1.getcRank();
 
             // Compare the hands based on the classification rank
-
-            //straight flush - highest card of same suit will win, review
             return switch(cRank){
-                case STRAIGHT_FLUSH, STRAIGHT, FLUSH -> compareStraight(p1, p2);
-                case FOURS -> compareFourOfAKind(p1, p2);
-                case FULLHOUSE -> compareFullHouse(p1, p2);
-                case TRIPLE -> compareThreeOfAKind(p1, p2);
-                case DOUBLE_PAIR -> compareTwoPairs(p1, p2);
-                case PAIR -> comparePair(p1, p2);
-                case HIGH_CARD -> compareHighestCards(p1, p2);
+                case ROYAL_FLUSH -> compareRoyalFlush();
+                case STRAIGHT_FLUSH, STRAIGHT, LOWERSTRAIGHT -> compareStraight();
+                case FOURS -> compareFourOfAKind();
+                case FULLHOUSE -> compareFullHouse();
+                case FLUSH -> compareFlush();
+                case TRIPLE -> compareThreeOfAKind();
+                case DOUBLE_PAIR -> compareTwoPairs();
+                case PAIR -> comparePair();
+                case HIGH_CARD -> compareHighCards();
+                case HIGH_COMMUNITY_CARD -> 0;
                 default -> throw new IllegalStateException("Invalid classification rank.");
             };
         }
     }
 
-    public int compareStraight(Player p1, Player p2) {
-        return Integer.compare(p1.getHighestStraight().getRank(), p2.getHighestStraight().getRank());
+    private int compareRoyalFlush() {
+        return p1.getcRank().compareTo(p2.getcRank());
     }
 
-    public int compareFourOfAKind(Player p1, Player p2) {
-        int rank1 = p1.getFourKind().getRank();
-        int rank2 = p2.getFourKind().getRank();
-        int cmp = Integer.compare(rank2, rank1);
-        if(cmp != 0){
-            return cmp;
-        }
-        return compareHighCards(p1, p2, 1);
-    }
+    private int compareFlush() {
 
-    public int compareHighCards(Player p1, Player p2, int numCardsToCompare) {
-        List<Card> hand1 = p1.getHand();
-        List<Card> hand2 = p2.getHand();
+        for(int i = 0; i < communityCards.size(); i++){
+            int p1Card = p1.getFlush().get(i);
+            int p2Card = p2.getFlush().get(i);
 
-        for(int i = 0; i < numCardsToCompare; i++){
-            int cmp = Integer.compare(hand2.get(i).getRank(), hand1.get(i).getRank());
-            if(cmp != 0){
+            int cmp = Integer.compare(p1Card, p2Card);
+            if(cmp != 0)
                 return cmp;
-            }
-        }
 
+        }
         return 0;
     }
 
-    public int compareFullHouse(Player p1, Player p2) {
-        int p1ThreeKindRank = p1.getThreeKind().getRank();
-        int p2ThreeKindRank = p2.getThreeKind().getRank();
+    //compare the highest card first then second-highest card (including those at the table) - if every card is same, then it is a tie
+    //basicaly if players have identical hand with High card, it will always be a tie
+    //also if pot cannot be split evenly, leftover money goes to next round
+    private int compareHighCards() {
+        int FIRST = 0;
+        int cmp = compareNthCards(FIRST);
+        if(cmp != 0)
+            return cmp;
+        int SECOND = 1;
+        return compareNthCards(SECOND);
 
-        if(p1ThreeKindRank != p2ThreeKindRank)
-            return Integer.compare(p2ThreeKindRank, p1ThreeKindRank);
-
-        int p1PairRank = p1.getPair().getRank();
-        int p2PairRank = p2.getPair().getRank();
-
-        return Integer.compare(p2PairRank, p1PairRank);
     }
 
+    /***
+     * @param pos 0 will compare first card, 1 will compare second card
+     * @return returns comparison of first or second card in each player hand
+     */
+    private int compareNthCards(int pos) {
+
+        return Integer.compare(p1.getHand().get(pos).getRank(), p2.getHand().get(pos).getRank());
+    }
+
+    public int compareStraight() {
+        return Integer.compare(p1.getHighestStraight().getRank(), p2.getHighestStraight().getRank());
+    }
+
+    public int compareFourOfAKind() {
+        int rank1 = p1.getFourKind().getRank();
+        int rank2 = p2.getFourKind().getRank();
+        int cmp = Integer.compare(rank1, rank2);
+        //higher fours wins
+        if(cmp != 0)
+            return cmp;
+
+        int p1HandRank = p1.getHand().get(0).getRank();
+        int p2HandRank = p2.getHand().get(0).getRank();
+
+        //keep only last card on table which is not part of fours combination
+        List<Card> excludedFromCommunity = excludeCards(communityCards, List.of(p1.getFourKind(), p1.getFourKind(), p1.getFourKind(), p1.getFourKind()));
+
+        Card lastCardOnBoard = excludedFromCommunity.get(0);
+        int lastCardRank = lastCardOnBoard.getRank();
+
+        //If The “Kicker On The Board,” The Fifth Community Card, Is Greater Than Any Of The Participants' Hole Cards, The Pot Is Divided.
+        if(p1HandRank <= lastCardRank && p2HandRank <= lastCardRank){
+            return 0;
+        } else
+            return Integer.compare(p1HandRank, p2HandRank);
 
 
-    public int comparePairOrTriple(Card player1Pairs, Card player2Pairs, Player p1, Player p2) {
-        int cmp = Integer.compare(player1Pairs.getRank(), player2Pairs.getRank());
+    }
+
+    public int compareFullHouse() {
+        Card p1Triple = p1.getThreeKind();
+        Card p2Triple = p2.getThreeKind();
+
+        int cmp = Integer.compare(p1Triple.getRank(), p2Triple.getRank());
+        //return if pairs or triples are not same
+        if(cmp != 0){
+            return cmp;
+        }
+
+        Card pair1 = p1.getPair();
+        Card pair2 = p2.getPair();
+
+        return Integer.compare(pair1.getRank(), pair2.getRank());
+
+    }
+
+    public int comparePairOrTriple(Card player1Pair, Card player2Pair) {
+        int cmp = compareKickers();
+        if(cmp == 0){
+            return cmp;
+        }
+        cmp = Integer.compare(player1Pair.getRank(), player2Pair.getRank());
         //return if pairs or triples are not same
         if(cmp != 0){
             return cmp;
         }
 
         // Compare the kickers
-        List<Card> hand1 = p1.getHand();
-        List<Card> hand2 = p2.getHand();
-        List<Card> remaining1 = new ArrayList<>(hand1);
-        List<Card> remaining2 = new ArrayList<>(hand2);
-        remaining1.remove(player1Pairs);
-        remaining2.remove(player2Pairs);
-
-
-        for(int i = 0; i < 2; i++){
-            cmp = Integer.compare(remaining1.get(i).getRank(), remaining2.get(i).getRank());
-            if(cmp != 0){
-                return cmp;
-            }
-        }
-
-        return 0;
+        return compareKickers();
 
     }
-    public int compareThreeOfAKind(Player p1, Player p2) {
+
+    public int compareThreeOfAKind() {
+        //there can't be same triples against each other in showdown
         Card threeOfAKind1 = p1.getThreeKind();
         Card threeOfAKind2 = p2.getThreeKind();
 
-        return comparePairOrTriple(threeOfAKind1, threeOfAKind2, p1, p2);
+        return comparePairOrTriple(threeOfAKind1, threeOfAKind2);
     }
 
-    public int compareTwoPairs(Player p1, Player p2) {
-        // Sort the pairs and kickers in each hand
-        p1.getHand().sort(Collections.reverseOrder());
-        p2.getHand().sort(Collections.reverseOrder());
+    public int compareTwoPairs() {
 
         // Find the higher pair in each hand
-        var cmp = Integer.compare(p2.getPair().getRank(), p1.getPair().getRank());
+        var cmp = compareKickers();
+        if(cmp == 0){
+            return cmp;
+        }
+        cmp = Integer.compare(p1.getPair().getRank(), p2.getPair().getRank());
         if(cmp != 0){
             return cmp;
         }
 
-        // Find the lower pair in each hand
-        cmp = Integer.compare(p2.getHand().get(2).getRank(), p1.getHand().get(2).getRank());
+        // Find the lower pair
+        cmp = Integer.compare(p1.getSecondPair().getRank(), p2.getSecondPair().getRank());
         if(cmp != 0){
             return cmp;
         }
 
         // Compare the kickers
-        cmp = compareHighestCards(p1, p2);
-        return cmp;
+        return compareKickers();
 
     }
 
-    public int comparePair(Player p1, Player p2) {
+    public int comparePair() {
 
         Card pair1 = p1.getPair();
         Card pair2 = p2.getPair();
 
-        return comparePairOrTriple(pair1, pair2, p1, p2);
+        return comparePairOrTriple(pair1, pair2);
 
     }
 
-    public int compareHighestCards(Player p1, Player p2) {
-        return Integer.compare(p1.getHighestCard(), p2.getHighestCard());
+    private int compareKickers() {
+        List<Card> tableWithHandp1 = new ArrayList<>(communityCards);
+        tableWithHandp1.addAll(p1.getHand());
+        tableWithHandp1.sort(Comparator.comparingInt(Card::getRank).reversed());
 
+        List<Card> tableWithHand = new ArrayList<>(communityCards);
+        tableWithHand.addAll(p2.getHand());
+        tableWithHand.sort(Comparator.comparingInt(Card::getRank).reversed());
+
+        //compare rest of cards, higher card wins, up to five cards (size of community cards)
+        for(int i = 0; i < communityCards.size(); i++){
+            Card p1card = tableWithHandp1.get(i);
+            Card p2card = tableWithHand.get(i);
+
+            if(p1card.getRank() != p2card.getRank())
+                return Integer.compare(p1card.getRank(), p2card.getRank());
+
+        }
+        return 0;
     }
+
+    private List<Card> excludeCards(List<Card> cards, List<Card> excludedCards) {
+        List<Card> result = new ArrayList<>();
+        for(Card card : cards){
+            if(!excludedCards.contains(card))
+                result.add(card);
+
+        }
+        return result;
+    }
+
+
 }
+
 

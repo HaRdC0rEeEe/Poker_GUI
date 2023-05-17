@@ -1,6 +1,9 @@
 package Controller;
 
-import GUI.*;
+import GUI.BoardPanel;
+import GUI.ChoicesPanel;
+import GUI.HandPanel;
+import GUI.TimeLabel;
 import Logic.*;
 
 import javax.swing.*;
@@ -13,6 +16,7 @@ public class Controller{
     private final Game game;
     private final BoardPanel boardPanel;
     private final ChoicesPanel choicesPanel;
+    private final ArrayList<HandPanel> handPanels;
 
 
     /***
@@ -28,94 +32,124 @@ public class Controller{
         this.boardPanel = boardPanel;
         this.choicesPanel = choicesPanel;
         this.game = game;
+        this.handPanels = handPanels;
 
-        //display cards of current players
-        for(HandPanel p : handPanels){
-            p.updatePanel();
-        }
+        updateEveryPanel();
+
+        game.getMainPlayer().getHandPanel().setIsOpponent(false);
+        game.getMainPlayer().getHandPanel().revealCards();
+
         //there is a case when MainPlayer can have pair in hand, therefore validate his hand and update panel
         updatePanelAndEvaluate(game.getMainPlayer());
         initListeners();
     }
 
+    private void updateEveryPanel() {
+        //display cards of current players
+        for(HandPanel p : handPanels){
+            p.updatePanel();
+        }
+    }
+
     private void initListeners() {
 
-        choicesPanel.getRaiseBtn().addActionListener(e->{
+        choicesPanel.getRaiseBtn().addActionListener(e -> {
 
             boolean gameNotEnd = true;
-                if(game.getCardsOnTable().size() < 3){
-                    game.drawAndBurn(3);
-                }
-                else if(game.getCardsOnTable().size() < 5){
-                    game.drawAndBurn(1);
-                }
-                else{
-                    gameNotEnd = false;
-                    for(Player currPlayer: game.getPlayers()){
-                        currPlayer.getHandPanel().setIsOpponent(false);
-                        currPlayer.getHandPanel().getCard1().unhideCard();
-                        currPlayer.getHandPanel().getCard2().unhideCard();
+            if(game.getCardsOnTable().size() < 3){
+                game.drawAndBurn(3);
+            } else if(game.getCardsOnTable().size() < 5){
+                game.drawAndBurn(1);
+            } else
+                gameNotEnd = false;
 
-                    }
+            if(gameNotEnd)
+                updatePanelAndEvaluate(game.getMainPlayer());
+            else{
+                evaulatePlayers();
+                updateEveryPanel();
+            }
 
-                    //javax.swing.Timer timer = new javax.swing.Timer(2000, arg0 -> {
-
-                        for(Player currPlayer: game.getPlayers()){
-                            updatePanelAndEvaluate(currPlayer);
-
-                            //System.out.println(currPlayer.getcRank());
-                            game.addToStatistics(currPlayer.getcRank());
-
-                        }
-
-
-                    /*});
-                    timer.setRepeats(false);
-                    timer.start();*/
-
-                    //System.out.println("________________________");
-                    //System.out.println(game.getStatistics().toString());
-                }
-
-                if(gameNotEnd)
-                    updatePanelAndEvaluate(game.getMainPlayer());
-                else
-                    System.out.println(determineWinners(game.getPlayers()).toString());
-
-                boardPanel.updatePanel(game.getCardsOnTable());
+            boardPanel.updatePanel(game.getCardsOnTable());
 
         });
 
-        //TODO implement fold logic
+        //TODO implement fold logic, TESTS here
         choicesPanel.getFoldBtn().addActionListener(e -> {
 
-            game.removeCardsOnTable();
+            executeTests(false, 100000);
 
         });
     }
 
-    //TODO replace this method with determineWinners method in test methods
-    public List<Player> determineWinners(List<Player> players) {
-        //keep adding players with 0 (same level) to list or reset if new 1 will be added
-        List<Player> winners = new ArrayList<>();
-        winners.add(players.get(0)); // initialize the list with the first player
+    private void executeTests(boolean onePlayer, int numOfTests) {
 
-        for (int i = 1; i < players.size(); i++) {
-            int result = new ComparatorByResult().compare(winners.get(0), players.get(i));
-            if (result > 0) {
-                winners.clear();
-                winners.add(players.get(i));
-            } else if (result == 0) {
-                winners.add(players.get(i));
+        int p1Won = 0;
+        int p2Won = 0;
+        int tie = 0;
+
+        for(int i = 0; i < numOfTests; i++){
+            if(!onePlayer){
+                game.setDeck(new Deck());
+                game.removeCardsOnTable();
+
+                game.round0DrawHands();
+
+                game.drawAndBurn(3);
+                game.drawAndBurn(1);
+                game.drawAndBurn(1);
+
+                evaulatePlayers();
+
+                if(Utils.winners.size() == 2)
+                    tie++;
+                else if(Utils.winners.contains(game.getMainPlayer()))
+                    p1Won++;
+                else
+                    p2Won++;
+
+            } else{
+                game.setPlayers(new ArrayList<>(List.of(new Player("TP"))));
+                game.setDeck(new Deck());
+                game.removeCardsOnTable();
+
+                game.round0DrawHands();
+
+                game.drawAndBurn(3);
+                game.drawAndBurn(1);
+                game.drawAndBurn(1);
+
+
+                evaulatePlayers();
+
             }
         }
-        winners.forEach(player -> player.setWinner(true));
-        return winners;
+
+        System.out.printf("[p1: %d, p2: %d, tie %d]\n", p1Won, p2Won, tie);
+        System.out.println(game.getStatistics());
+
     }
 
+    private void evaulatePlayers() {
+
+        for(Player player : game.getPlayers()){
+            player.getHandPanel().setIsOpponent(false);
+            updatePanelAndEvaluate(player);
+            player.getHandPanel().revealCards();
+
+        }
+
+        Utils.setWinners(game.getPlayers());
+
+        for(Player winner : Utils.winners){
+            game.addToStatistics(winner.getcRank());
+        }
+    }
+
+
     private void updatePanelAndEvaluate(Player player) {
-        HandEvaluator handEvaluator = new HandEvaluator(player, game.getCardsOnTable());
-        handEvaluator.evaulateClassificationRank();
+        HandEvaluator ev = new HandEvaluator(player, game.getCardsOnTable());
+        ev.evaulateClassificationRank();
         player.getHandPanel().updatePanel();
     }
 
@@ -132,7 +166,6 @@ public class Controller{
 
         return nickname;
     }
-
 
 
 }

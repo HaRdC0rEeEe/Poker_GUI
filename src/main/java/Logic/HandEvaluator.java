@@ -7,44 +7,64 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 
-public class HandEvaluator implements Comparator<Player>{
+public class HandEvaluator{
 
-    private final int MIN_FLUSH_SIZE = 5;
+    public static ArrayList<Card> communityCards;
     private final ArrayList<Card> handAndTable;
-
     private final Player player;
     private Card previousDouble;
+    private Card previousTriple;
     private boolean isPair;
     private boolean isTriple;
 
     public HandEvaluator(Player evaulatingPlayer, ArrayList<Card> cardsOnTable) {
         player = evaulatingPlayer;
-        handAndTable = new ArrayList<>(cardsOnTable);
+        communityCards = cardsOnTable;
+        communityCards.sort(Comparator.comparingInt(Card::getRank));
+        player.getHand().sort(Comparator.comparingInt(Card::getRank).reversed());
+
+        handAndTable = new ArrayList<>(communityCards);
         handAndTable.addAll(evaulatingPlayer.getHand());
-        // sort the cards by rank
         handAndTable.sort(Comparator.comparingInt(Card::getRank));
 
-        //System.out.println("cards on table and hand:");
-        //System.out.println(handAndTable);
         setDefaultState();
     }
 
     private void setDefaultState() {
         player.setWinner(false);
+        player.setClassificationRank(ClassificationRank.HIGH_CARD);
         player.setPair(null);
+        player.setBiggestStraight(null);
+        player.setThreeKind(null);
+        player.setFlush(null);
+        player.setFourKind(null);
+        previousDouble = null;
+        previousTriple = null;
         isPair = false;
         isTriple = false;
     }
 
 
-
     public void evaulateClassificationRank() {
-        for(Card card : handAndTable
-        ){
+
+        for(Card card : handAndTable){
             checkForPairs(card);
         }
-        checkForStronger();
 
+        checkForStronger();
+        checkForWeakest();
+
+    }
+
+    private void checkForWeakest() {
+        //case where player has no combo and his card is not bigger than the smallest community card
+        //there can only be tied in this scenario if every other player has same rank
+        if(player.getcRank() == ClassificationRank.HIGH_CARD && !communityCards.isEmpty()){
+            List<Card> tmpList = new ArrayList<>(player.getHand());
+            tmpList.sort(Comparator.comparingInt(Card::getRank));
+            if(tmpList.get(1).getRank() < communityCards.get(0).getRank())
+                player.setClassificationRank(ClassificationRank.HIGH_COMMUNITY_CARD);
+        }
     }
 
     private void checkForPairs(Card currentCard) {
@@ -55,152 +75,129 @@ public class HandEvaluator implements Comparator<Player>{
 
         if(player.getcRank().getValue() < ClassificationRank.FOURS.getValue()){
             if(freq == 4){
-                player.setFourKind(currentCard);
                 player.setClassificationRank(ClassificationRank.FOURS);
-                player.setPair(currentCard);
+                player.setFourKind(currentCard);
             }
             if(freq == 3){
-                isTriple = true;
-                player.setThreeKind(currentCard);
-                checkForFullhouse();
-
-                if(player.getcRank().getValue() < ClassificationRank.TRIPLE.getValue()){
+                if(player.getcRank().getValue() < ClassificationRank.TRIPLE.getValue())
                     player.setClassificationRank(ClassificationRank.TRIPLE);
 
-                    if(previousDouble == null)
-                        previousDouble = currentCard;
-                    else if(currentCard.getRank() != previousDouble.getRank())
-                        checkForFullhouse();
+                if(previousTriple != null){
+                    //condition will trigger only if player has another triple in community cards hence triggering Full house
+                    if(previousTriple.getRank() != currentCard.getRank()){
+                        isPair = true;
+                        previousTriple = currentCard.getRank() < previousTriple.getRank() ? currentCard : previousTriple;
+                        //set lower triple as pair
+                        player.setPair(previousTriple);
+                    }
+                    previousTriple = currentCard.getRank() > previousTriple.getRank() ? currentCard : previousTriple;
 
-                    Card biggerPair = currentCard.getRank() > previousDouble.getRank() ? currentCard : previousDouble;
-                    player.setPair(biggerPair);
-                }
-            }
-            checkForTwoOfAKind(currentCard, freq);
+                } else
+                    previousTriple = currentCard;
+
+                player.setThreeKind(previousTriple);
+                isTriple = true;
+
+
+            } else
+                checkForTwoOfAKind(currentCard, freq);
+
+            checkForFullhouse();
+
         }
     }
-
-
-    /*private void checkForHighestCard() {
-        ArrayList<Player> winners = new ArrayList<>();
-
-        //sort players by their highest cards in hands
-        listOfPlayers.sort(this);
-
-        int currHighCard = 0;
-        for(Player p : listOfPlayers
-        ){
-            int highestCardOfPlayer = p.getHand().get(0).getRank();
-            //check if current card is highest
-            if(highestCardOfPlayer >= currHighCard){
-                currHighCard = highestCardOfPlayer;
-                //set winning player
-                winners.add(p);
-            }
-        }
-
-        if(winners.size() > 1){
-
-            for(int i = 1; i < winners.size(); i++){
-                //highest first card here
-                Player p = winners.get(i);
-                //highest card of previous player
-                Player prev_p = winners.get(i - 1);
-                //result of compareCards method
-                int result = compare(p, prev_p);
-
-                //if cards are not same, we can delete other player safely, must have lower card after sortion
-                if(result > 0){
-                    winners.remove(p);
-                    i--;
-                } else{
-                    System.out.println("BOTH HAVE SAME HANDS BROOOO");
-                }
-            }
-        }
-
-        winners.forEach(this::setWinner);
-
-    }*/
 
     private void checkForFullhouse() {
-        if(player.getcRank().getValue() < ClassificationRank.FULLHOUSE.getValue())
-            if(isTriple && isPair)
+        if(isTriple && isPair)
+            if(player.getcRank().getValue() < ClassificationRank.FULLHOUSE.getValue())
                 player.setClassificationRank(ClassificationRank.FULLHOUSE);
-    }
-
-    private void checkForFlush() {
-        List<Card> cards = new ArrayList<>(handAndTable);
-
-        for (int i = 0; i <= cards.size() - MIN_FLUSH_SIZE; i++) {
-            boolean isStraight = true;
-            for (int j = i; j < i + MIN_FLUSH_SIZE - 1; j++) {
-                if (cards.get(j).getRank() - cards.get(j + 1).getRank() != 1) {
-                    isStraight = false;
-                    break;
-                }
-            }
-            if (isStraight) {
-                // set the player's biggest straight card to the last card in the straight
-                player.setBiggestStraight(cards.get(i));
-                player.setClassificationRank(ClassificationRank.STRAIGHT);
-                return;
-            }
-        }
     }
 
     private void checkForRoyalFlush() {
 
         List<Integer> ROYAL_FLUSH_VALUES = Arrays.asList(14, 13, 12, 11, 10);
-        ArrayList<Integer> values = new ArrayList<>();
 
-        handAndTable.forEach(card -> values.add(card.getRank()));
+        ArrayList<Integer> values = new ArrayList<>(player.getFlush());
 
         if(values.containsAll(ROYAL_FLUSH_VALUES))
             player.setClassificationRank(ClassificationRank.ROYAL_FLUSH);
 
     }
 
-
     private void checkForStronger() {
 
-        ArrayList<CardEnums.cSymbol> straightFlush = new ArrayList<>();
+        Hashtable<CardEnums.cSymbol, Integer> symbolsTable = new Hashtable<>();
+        for(CardEnums.cSymbol symbol : CardEnums.cSymbol.values()){
+            symbolsTable.put(symbol, 0);
+        }
+
+
+        //add first symbol to flush map
+        symbolsTable.put(handAndTable.get(0).getCardSymbol(), 1);
+
+        checkForStraight(symbolsTable);
+
+        checkForFlush(symbolsTable);
+
+        if(player.getcRank().getValue() < ClassificationRank.STRAIGHT.getValue())
+            checkForLowestStraight();
+
+    }
+
+    private void checkForStraight(Hashtable<CardEnums.cSymbol, Integer> symbolsTable) {
         // count the number of consecutive cards
         int counter = 1;
         for(int i = 1; i < handAndTable.size(); i++){
-            if(handAndTable.get(i).getRank() == handAndTable.get(i - 1).getRank() + 1){
+            CardEnums.cSymbol currSymbol = handAndTable.get(i).getCardSymbol();
+            int currCard = handAndTable.get(i).getRank();
+            int prevCard = handAndTable.get(i - 1).getRank();
+
+            //increment current symbol in map
+            symbolsTable.put(currSymbol, symbolsTable.get(currSymbol) + 1);
+
+            if(currCard == prevCard + 1)
                 counter++;
-                straightFlush.add(handAndTable.get(i).getCardSymbol());
-                straightFlush.add(handAndTable.get(i - 1).getCardSymbol());
-            } else if(handAndTable.get(i).getRank() != handAndTable.get(i - 1).getRank()){
-                counter = 1;
-                straightFlush.clear();
-            }
+
+            else if(currCard != prevCard)
+                counter = 1; //skip for same cards
 
             // if we have 5 consecutive cards, we have a straight
+            int MIN_FLUSH_SIZE = 5;
             if(counter >= MIN_FLUSH_SIZE){
-
                 player.setClassificationRank(ClassificationRank.STRAIGHT);
                 player.setBiggestStraight(handAndTable.get(i));
 
-                Set<CardEnums.cSymbol> symbolSet = new HashSet<>(straightFlush);
-
-                //The HashSet only stores unique elements, so if you try to add an element that's already in the set, it won't be added again.
-                // Therefore, you can use the size of the set to check if all the elements are the same
-                if(symbolSet.size() == 1){
-                    player.setClassificationRank(ClassificationRank.STRAIGHT_FLUSH);
-                    checkForRoyalFlush();
-                }
             }
         }
+    }
 
-        if(player.getcRank().getValue() < ClassificationRank.STRAIGHT_FLUSH.getValue())
-            checkForLowestStraight();
+    private void checkForFlush(Hashtable<CardEnums.cSymbol, Integer> symbolsTable) {
+        //keep only valid symbol count for flush
+        symbolsTable.values().removeIf(count -> count < 5);
 
-        if(player.getcRank().getValue() < ClassificationRank.FLUSH.getValue())
-            checkForFlush();
+        if(symbolsTable.size() == 1){
+            //collection which will be sorted, will include cards and their respective symbols
+            ArrayList<Integer> flushList = new ArrayList<>();
 
+            CardEnums.cSymbol symbol = symbolsTable.keys().nextElement();
+            for(Card card : handAndTable){
+                if(card.getCardSymbol() == symbol)
+                    flushList.add(card.getRank());
+            }
 
+            //highest card comes first
+            Collections.reverse(flushList);
+            player.setFlush(flushList);
+
+            //if symbolSet contains only 1, player has flush and if he already has a straight he must have straight flush
+            if(player.getcRank().getValue() == ClassificationRank.STRAIGHT.getValue()){
+                player.setClassificationRank(ClassificationRank.STRAIGHT_FLUSH);
+                checkForRoyalFlush();
+            } else if(player.getcRank().getValue() < ClassificationRank.FLUSH.getValue()){
+                player.setClassificationRank(ClassificationRank.FLUSH);
+
+            }
+        }
     }
 
 
@@ -211,14 +208,28 @@ public class HandEvaluator implements Comparator<Player>{
 
         handAndTable.forEach(card -> values.add(card.getRank()));
 
+        Set<CardEnums.cSymbol> symbolsSet = handAndTable.stream().map(Card::getCardSymbol).collect(Collectors.toSet());
+        boolean containsSameSymbols = symbolsSet.size() == 1;
+
         if(values.containsAll(LOWER_STRAIGHT_VALUES)){
 
-            Set<CardEnums.cSymbol> symbolsSet = handAndTable.stream().map(Card::getCardSymbol).collect(Collectors.toSet());
-            boolean containsSameSymbols = symbolsSet.size() == 1;
+            for(int i = 1; i < handAndTable.size(); i++){
 
-            if(containsSameSymbols && LOWER_STRAIGHT_VALUES.containsAll(handAndTable.stream().map(Card::getRank).toList())){
+                int currCard = handAndTable.get(i).getRank();
+                int prevCard = handAndTable.get(i - 1).getRank();
+
+                if(currCard == prevCard + 1)
+                    //if(containsSameSymbols)
+                    player.setBiggestStraight(handAndTable.get(i));
+
+            }
+
+
+            //if(containsSameSymbols && LOWER_STRAIGHT_VALUES.containsAll(handAndTable.stream().map(Card::getRank).toList())){
+            if(containsSameSymbols){
                 // The list contains only cards with the same symbol and is a lower straight
-                player.setClassificationRank(ClassificationRank.STRAIGHT_FLUSH);
+                if(player.getcRank().getValue() < ClassificationRank.STRAIGHT_FLUSH.getValue())
+                    player.setClassificationRank(ClassificationRank.STRAIGHT_FLUSH);
             } else if(player.getcRank().getValue() < ClassificationRank.LOWERSTRAIGHT.getValue())
                 player.setClassificationRank(ClassificationRank.LOWERSTRAIGHT);
 
@@ -230,46 +241,27 @@ public class HandEvaluator implements Comparator<Player>{
 
         int MIN_DOUBLES_SIZE = 2;
         if(isPair){
-            if(player.getcRank().getValue() < ClassificationRank.DOUBLE_PAIR.getValue()){
-                if(currentCard.getRank() != previousDouble.getRank()){
-                    Card biggerPair = currentCard.getRank() > previousDouble.getRank() ? currentCard : previousDouble;
-                    player.setPair(biggerPair);
-                    previousDouble = biggerPair;
+            if(currentCard.getRank() != previousDouble.getRank()){
+                if(player.getcRank().getValue() <= ClassificationRank.DOUBLE_PAIR.getValue())
                     player.setClassificationRank(ClassificationRank.DOUBLE_PAIR);
-                }
-            }
-        } else if(freq == MIN_DOUBLES_SIZE){
-            isPair = true;
-            checkForFullhouse();
+                Card biggerPair = currentCard.getRank() > previousDouble.getRank() ? currentCard : previousDouble;
+                player.setPair(biggerPair);
+                player.setSecondPair(currentCard);
 
-            if(player.getcRank().getValue() < ClassificationRank.TRIPLE.getValue()){
-                previousDouble = currentCard;
+            }
+        } else if(freq >= MIN_DOUBLES_SIZE){
+            if(player.getcRank().getValue() <= ClassificationRank.PAIR.getValue())
                 player.setClassificationRank(ClassificationRank.PAIR);
-                player.setPair(currentCard);
-                isPair = true;
-            }
+
+            if(previousDouble != null)
+                previousDouble = currentCard.getRank() > previousDouble.getRank() ? currentCard : previousDouble;
+
+            else
+                previousDouble = currentCard;
+
+            player.setPair(previousDouble);
+            isPair = true;
         }
-
-    }
-
-    ///compare two symbols of cards (ACE, KING, THREE...) and sort which one is bigger in ranking
-    ///cards are already sorted he
-    @Override
-    public int compare(Player o1, Player o2) {
-        int c1 = o1.getHand().get(0).getRank();
-        int c2 = o2.getHand().get(0).getRank();
-
-        return c1 == c2 ? compareSecondCard(o1, o2) : Integer.compare(c1, c2);
-
-    }
-
-
-    private int compareSecondCard(Player o1, Player o2) {
-        int c1 = o1.getHand().get(1).getRank();
-        int c2 = o2.getHand().get(1).getRank();
-
-        return c1 == c2 ? 0 : Integer.compare(c1, c2);
-
     }
 
 }

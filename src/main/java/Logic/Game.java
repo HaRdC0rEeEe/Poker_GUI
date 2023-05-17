@@ -1,6 +1,5 @@
 package Logic;
 
-import Enums.BettingStatus;
 import Enums.ClassificationRank;
 import Enums.PlayerRole;
 
@@ -15,23 +14,20 @@ public class Game{
     private static final int DECREMENT_MINUS_TWO = -2;
     public static int BANK = 0;
     public static int HIGHEST_BET = 0;
-    private final ArrayList<Player> players;
-    private final LinkedHashMap<ClassificationRank, Integer> statistics = new LinkedHashMap<>();
+
+    final protected ArrayList<Card> cardsOnTable;
+    private final LinkedHashMap<ClassificationRank, Integer> statistics;
+    private ArrayList<Player> players;
     private final int chips;
     private final Player mainPlayer;
-    private final ArrayList<Card> cardsOnTable;
-    private Deck deck;
-    private Player firstPlayer;
-    private Player secondPlayer;
-    private int numOfCurrentGame = 0, indexOfDealer;
 
     public Game(int startingChips, List<Player> players) {
 
         chips = startingChips;
         this.players = new ArrayList<>(players);
-        cardsOnTable = new ArrayList<>();
         mainPlayer = players.get(0);
-
+        statistics = new LinkedHashMap<>();
+        cardsOnTable = new ArrayList<>();
         ///assign dealer role, big and small blinds
         List<Integer> rolledValues = initRandomThrows();
         indexOfDealer = rolledValues.indexOf(Collections.max(rolledValues));
@@ -42,6 +38,15 @@ public class Game{
         //setup game
         initialiseBeforeMatch(numOfCurrentGame);
 
+    }
+
+    private Deck deck;
+    private Player firstPlayer;
+    private Player secondPlayer;
+    private int numOfCurrentGame = 0, indexOfDealer;
+
+    public void setPlayers(ArrayList<Player> players) {
+        this.players = players;
     }
 
     public Player getMainPlayer() {
@@ -144,7 +149,7 @@ public class Game{
     private void setOtherRoles() {
         Player temp_player = secondPlayer;
         int i = players.indexOf(secondPlayer);
-        int counter = secondPlayer.getPlayng_order();
+        int counter = secondPlayer.getPlayngOrder();
 
         while(temp_player.getRole() != PlayerRole.DEALER){
             i++;
@@ -156,53 +161,11 @@ public class Game{
         }
     }
 
-    private boolean hasRoundEnded() {
-        int numOfPlayersChecked = 0;
-        int numOfPlayersCalled = 0;
-
-        for(Player p : players
-        ){
-            if(p.getBettingStatus() == BettingStatus.STILL_BETTING)
-                return false;
-            if(p.getBettingStatus() == BettingStatus.CHECKED)
-                numOfPlayersChecked++;
-            if(p.getBettingStatus() == BettingStatus.CALLED)
-                numOfPlayersCalled++;
-        }
-
-        if(numOfPlayersCalled == players.size() - 1 && numOfPlayersChecked == 1){
-            System.out.println("Everyone has called last raised bet.");
-            return true;
-        }
-
-        if(numOfPlayersChecked == players.size()){
-            System.out.println("Everyone has checked.");
-            return true;
-        }
-
-        if(numOfPlayersCalled == players.size()){
-            System.out.println("Everyone has called.");
-            return true;
-        }
-        return false;
-    }
-
     public void drawAndBurn(int numToDraw) {
         deck.burnCard();
         for(int j = 0; j < numToDraw; j++){
             cardsOnTable.add(deck.getTopCard());
-
         }
-        ///TODO TEST COMBINATIONS
-        /*cardsOnTable.add(new Card(CardEnums.cValue.TEN, CardEnums.cSymbol.HEARTS));
-        cardsOnTable.add(new Card(CardEnums.cValue.KING, CardEnums.cSymbol.HEARTS));
-        cardsOnTable.add(new Card(CardEnums.cValue.KING, CardEnums.cSymbol.HEARTS));
-        cardsOnTable.add(new Card(CardEnums.cValue.KING, CardEnums.cSymbol.HEARTS));
-        cardsOnTable.add(new Card(CardEnums.cValue.ACE, CardEnums.cSymbol.HEARTS));
-        players.get(0).Fold();
-        players.get(0).drawCard(new Card(CardEnums.cValue.QUEEN, CardEnums.cSymbol.HEARTS));
-        players.get(0).drawCard(new Card(CardEnums.cValue.JACK, CardEnums.cSymbol.HEARTS));*/
-
     }
 
     public void addToStatistics(ClassificationRank getcRank) {
@@ -221,18 +184,6 @@ public class Game{
 
     }
 
-    private void endGameStartOver() {
-        //remove every player with no chips
-        players.removeIf(p -> p.getChips() == 0);
-        if(players.size() == 1){
-            System.out.printf("Winner of whole match is %s!", players.get(0).getName());
-            System.exit(0);
-        }
-        numOfCurrentGame++;
-
-        //initialiseBeforeMatch(numOfCurrentGame);
-    }
-
     private List<Integer> initRandomThrows() {
         List<Integer> rolledValues = new ArrayList<>();
         Random rnd = new Random();
@@ -240,57 +191,6 @@ public class Game{
         players.forEach(n -> rolledValues.add(rnd.nextInt(Integer.MAX_VALUE) + 1));
 
         return rolledValues;
-    }
-
-    //TODO rewrite or remove this later, not needed in GUI
-    private void gameRounds() {
-        printPlayers(false, false);
-        System.out.println();
-
-        int indexOfCurrentPlayer = players.indexOf(secondPlayer) + 1;
-
-        while(cardsOnTable.size() != 5 & players.size() != 1){
-
-            while(players.size() != 1){
-
-                if(indexOfCurrentPlayer >= players.size())
-                    indexOfCurrentPlayer = 0;
-
-                Player current_player = players.get(indexOfCurrentPlayer);
-                //playRound(current_player);
-
-                if(current_player.getBettingStatus() == BettingStatus.FOLDED){
-                    players.remove(current_player);
-                    indexOfCurrentPlayer--;
-                } else if(current_player.getBettingStatus() == BettingStatus.RAISED){
-                    for(Player p : players)
-                        p.setBettingStatus(BettingStatus.STILL_BETTING);
-
-                    current_player.setBettingStatus(BettingStatus.RAISED);
-                }
-                if(hasRoundEnded()){
-                    resetStatuses(false);
-                    break;
-                }
-
-                indexOfCurrentPlayer++;
-
-            }
-
-            printPlayers(false, false);
-            System.out.println();
-
-            //TEST
-            if(players.size() == 1)
-                break;
-
-
-            indexOfCurrentPlayer = players.indexOf(secondPlayer);
-        }
-        System.out.println("Cards on table: " + cardsOnTable);
-        System.out.println();
-
-        //evaulateWinner();
     }
 
 
@@ -322,13 +222,6 @@ public class Game{
 
     }
 
-    private void printPlayers(boolean withCards, boolean withResult) {
-
-        for(Player p : players
-        ){
-            System.out.println(p.toString(withCards, withResult));
-        }
-    }
 
     public void removeCardsOnTable() {
         cardsOnTable.clear();
