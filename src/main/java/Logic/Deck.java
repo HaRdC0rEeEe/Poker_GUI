@@ -2,7 +2,8 @@ package Logic;
 
 import Enums.CardEnums;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Stack;
 
 public class Deck{
 
@@ -12,7 +13,7 @@ public class Deck{
 
         createDeck();
         Collections.shuffle(deck);
-        //System.out.println(deck);
+
     }
 
     private void createDeck() {

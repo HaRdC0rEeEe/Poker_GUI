@@ -45,12 +45,13 @@ public class HandEvaluator{
     }
 
 
-    public void evaulateClassificationRank() {
+    public void evaluateClassificationRank() {
 
         for(Card card : handAndTable){
             checkForPairs(card);
         }
 
+        //check for straight, flush, straight-flush, full house and royal flush
         checkForStronger();
         checkForWeakest();
 
@@ -73,23 +74,26 @@ public class HandEvaluator{
         if(freq == 1)
             return;
 
+        //check for four of a kind
         if(player.getcRank().getValue() < ClassificationRank.FOURS.getValue()){
             if(freq == 4){
                 player.setClassificationRank(ClassificationRank.FOURS);
                 player.setFourKind(currentCard);
             }
+            //check for three of a kind
             if(freq == 3){
                 if(player.getcRank().getValue() < ClassificationRank.TRIPLE.getValue())
                     player.setClassificationRank(ClassificationRank.TRIPLE);
 
                 if(previousTriple != null){
-                    //condition will trigger only if player has another triple in community cards hence triggering Full house
+                    //condition will trigger only if player has another triple in community cards (f.e. K 555 444) hence triggering Full house
                     if(previousTriple.getRank() != currentCard.getRank()){
                         isPair = true;
                         previousTriple = currentCard.getRank() < previousTriple.getRank() ? currentCard : previousTriple;
                         //set lower triple as pair
                         player.setPair(previousTriple);
                     }
+                    //set bigger triple as triple
                     previousTriple = currentCard.getRank() > previousTriple.getRank() ? currentCard : previousTriple;
 
                 } else
@@ -98,12 +102,10 @@ public class HandEvaluator{
                 player.setThreeKind(previousTriple);
                 isTriple = true;
 
-
             } else
                 checkForTwoOfAKind(currentCard, freq);
 
             checkForFullhouse();
-
         }
     }
 
@@ -130,7 +132,6 @@ public class HandEvaluator{
         for(CardEnums.cSymbol symbol : CardEnums.cSymbol.values()){
             symbolsTable.put(symbol, 0);
         }
-
 
         //add first symbol to flush map
         symbolsTable.put(handAndTable.get(0).getCardSymbol(), 1);
@@ -203,6 +204,7 @@ public class HandEvaluator{
 
     private void checkForLowestStraight() {
 
+        //straight with Ace as lowest card
         final List<Integer> LOWER_STRAIGHT_VALUES = Arrays.asList(14, 5, 4, 3, 2);
         ArrayList<Integer> values = new ArrayList<>();
 
@@ -219,13 +221,10 @@ public class HandEvaluator{
                 int prevCard = handAndTable.get(i - 1).getRank();
 
                 if(currCard == prevCard + 1)
-                    //if(containsSameSymbols)
                     player.setBiggestStraight(handAndTable.get(i));
 
             }
 
-
-            //if(containsSameSymbols && LOWER_STRAIGHT_VALUES.containsAll(handAndTable.stream().map(Card::getRank).toList())){
             if(containsSameSymbols){
                 // The list contains only cards with the same symbol and is a lower straight
                 if(player.getcRank().getValue() < ClassificationRank.STRAIGHT_FLUSH.getValue())
@@ -263,7 +262,6 @@ public class HandEvaluator{
             isPair = true;
         }
     }
-
 }
 
 

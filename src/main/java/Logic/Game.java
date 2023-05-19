@@ -3,6 +3,7 @@ package Logic;
 import Enums.ClassificationRank;
 import Enums.PlayerRole;
 
+import javax.swing.*;
 import java.util.*;
 
 public class Game{
@@ -26,6 +27,7 @@ public class Game{
         chips = startingChips;
         this.players = new ArrayList<>(players);
         mainPlayer = players.get(0);
+        mainPlayer.setName(nameValidation(true));
         statistics = new LinkedHashMap<>();
         cardsOnTable = new ArrayList<>();
         ///assign dealer role, big and small blinds
@@ -231,4 +233,25 @@ public class Game{
     public void setDeck(Deck deck) {
         this.deck = deck;
     }
+
+    public void resetStatistics() {
+        statistics.clear();
+        ;
+    }
+
+    //simple name input for MainPlayer or second player if that will be the case in future
+    //(although it wouldn't make much sense to have two human players locally)
+    private String nameValidation(boolean isFirstPlayer) {
+        String message = "Please input nickname for %%% player";
+
+        message = isFirstPlayer ? message.replace("%%%", "first") : message.replace("%%%", "second");
+
+        String nickname = JOptionPane.showInputDialog(null, message, "", JOptionPane.PLAIN_MESSAGE);
+        while(nickname == null){
+            nickname = JOptionPane.showInputDialog(null, "Incorrect input. Try again.", "", JOptionPane.PLAIN_MESSAGE);
+        }
+
+        return nickname;
+    }
+
 }

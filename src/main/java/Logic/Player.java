@@ -14,7 +14,7 @@ public class Player{
 
     public static final Scanner sc = new Scanner(System.in);
     private static boolean hasNotBeenRaised = false;
-    private final String name;
+    private String name;
     private final List<Card> hand;
     private ArrayList<Integer> flush;
     private BettingStatus bettingStatus;
@@ -32,7 +32,7 @@ public class Player{
     private boolean isWinner = false;
     public Player() {
         Random r = new Random();
-        String[] poolOfNames = new String[]{"Amanda", "Peter", "Sajmon", "Arnošt", "Nicole"};
+        String[] poolOfNames = new String[]{"Amanda", "Peter", "Simon", "Arnošt", "Nicole", "Michael", "Valeria", "David"};
         int x = r.nextInt(poolOfNames.length);
 
         hand = new ArrayList<>();
@@ -51,7 +51,6 @@ public class Player{
     }
 
     public void setFlush(ArrayList<Integer> flush) {
-
         this.flush = flush;
     }
 
@@ -159,96 +158,6 @@ public class Player{
         this.role = role;
     }
 
-    public void printActions() {
-        if(hasNotBeenRaised || totalBet == HIGHEST_BET){
-            System.out.println("[1] - > CHECK");
-        } else{
-            System.out.printf("[1] - > CALL (%d)\n", HIGHEST_BET - totalBet);
-        }
-        System.out.println("[2] - > RAISE");
-        System.out.println("[3] - > FOLD");
-        System.out.println("[4] - > HAND");
-    }
-
-    public void chooseAction(int chosenAction) {
-
-        switch(chosenAction){
-            case 1:
-                if(hasNotBeenRaised || totalBet == HIGHEST_BET){
-                    System.out.printf("%s has checked.\n", name);
-                    setStatus(BettingStatus.CHECKED);
-                } else{
-                    call();
-                    setStatus(BettingStatus.CALLED);
-                    System.out.printf("%s has called %d chips.\n", name, bet);
-                }
-                break;
-
-            case 2:
-                int raise = checkIfBetIsOkay();
-                raise(raise);
-                System.out.printf("%s has raised by %d chips.\n", name, HIGHEST_BET);
-                break;
-
-            case 3:
-                this.Fold();
-                setStatus(BettingStatus.FOLDED);
-                break;
-
-            case 4:
-                System.out.println(getHand());
-                printActions();
-                chooseAction(this.getAction());
-                break;
-        }
-    }
-
-    protected int getAction() {
-
-        System.out.println("Choose your action: ");
-        int action = tryCatchInputMismatchException();
-
-        if(action > 4 || action <= 0){
-            System.out.println("Incorrect action number");
-            sc.next();
-            return getAction();
-        }
-        return action;
-    }
-
-    protected int tryCatchInputMismatchException() {
-        int n;
-        try{
-            n = sc.nextInt();
-        } catch(Exception e){
-            //When a scanner throws an InputMismatchException, the scanner will not pass the token that caused the exception.
-            // we must use sc.next() to discard token which caused exception
-            System.out.println("Incorrect number, try again");
-            sc.next();
-            return tryCatchInputMismatchException();
-        }
-
-        return n;
-    }
-
-    protected int checkIfBetIsOkay() {
-
-        System.out.println("Enter amount of your bet: ");
-        int tempBet = tryCatchInputMismatchException();
-
-        //cant bet more than you have, hence ALL IN
-        if(tempBet >= this.getChips()){
-            System.out.printf("%s has went ALL IN\n", name);
-            tempBet = this.getChips() - HIGHEST_BET;
-        } else if(tempBet <= 0){
-            System.out.println("Incorrect number");
-            sc.next();
-            return checkIfBetIsOkay();
-        }
-        return tempBet;
-
-    }
-
     private void setStatus(BettingStatus bettingStatus) {
         this.bettingStatus = bettingStatus;
     }
@@ -273,13 +182,11 @@ public class Player{
     }
 
     protected void setPlayingOrder(int newVal) {
-
-        this.playingOrder = newVal;
+        playingOrder = newVal;
     }
 
     protected int getPlayngOrder() {
-
-        return this.playingOrder;
+        return playingOrder;
     }
 
     public void addChips(int chips) {
@@ -324,6 +231,10 @@ public class Player{
 
     public void setSecondPair(Card secondPair) {
         this.secondPair = secondPair;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }
 

@@ -48,16 +48,16 @@ public class DoublePairsTest{
         player4.drawCard(new Card(CardEnums.cValue.EIGHT, CardEnums.cSymbol.CLUBS));
 
         ev = new HandEvaluator(player1, communityCards);
-        ev.evaulateClassificationRank();
+        ev.evaluateClassificationRank();
 
         ev = new HandEvaluator(player2, communityCards);
-        ev.evaulateClassificationRank();
+        ev.evaluateClassificationRank();
 
         ev = new HandEvaluator(player3, communityCards);
-        ev.evaulateClassificationRank();
+        ev.evaluateClassificationRank();
 
         ev = new HandEvaluator(player4, communityCards);
-        ev.evaulateClassificationRank();
+        ev.evaluateClassificationRank();
 
         players = new ArrayList<>(List.of(player1, player2, player3, player4));
         Utils.setWinners(players);
@@ -103,16 +103,16 @@ public class DoublePairsTest{
         player4.drawCard(new Card(CardEnums.cValue.EIGHT, CardEnums.cSymbol.CLUBS));
 
         ev = new HandEvaluator(player1, communityCards);
-        ev.evaulateClassificationRank();
+        ev.evaluateClassificationRank();
 
         ev = new HandEvaluator(player2, communityCards);
-        ev.evaulateClassificationRank();
+        ev.evaluateClassificationRank();
 
         ev = new HandEvaluator(player3, communityCards);
-        ev.evaulateClassificationRank();
+        ev.evaluateClassificationRank();
 
         ev = new HandEvaluator(player4, communityCards);
-        ev.evaulateClassificationRank();
+        ev.evaluateClassificationRank();
 
         players = new ArrayList<>(List.of(player1, player2, player3, player4));
         Utils.setWinners(players);
@@ -155,13 +155,13 @@ public class DoublePairsTest{
 
 
         ev = new HandEvaluator(player1, communityCards);
-        ev.evaulateClassificationRank();
+        ev.evaluateClassificationRank();
 
         ev = new HandEvaluator(player2, communityCards);
-        ev.evaulateClassificationRank();
+        ev.evaluateClassificationRank();
 
         ev = new HandEvaluator(player3, communityCards);
-        ev.evaulateClassificationRank();
+        ev.evaluateClassificationRank();
 
         players = new ArrayList<>(List.of(player1, player2, player3));
         Utils.setWinners(players);
@@ -204,13 +204,13 @@ public class DoublePairsTest{
 
 
         ev = new HandEvaluator(player1, communityCards);
-        ev.evaulateClassificationRank();
+        ev.evaluateClassificationRank();
 
         ev = new HandEvaluator(player2, communityCards);
-        ev.evaulateClassificationRank();
+        ev.evaluateClassificationRank();
 
         ev = new HandEvaluator(player3, communityCards);
-        ev.evaulateClassificationRank();
+        ev.evaluateClassificationRank();
 
         players = new ArrayList<>(List.of(player1, player2, player3));
         Utils.setWinners(players);
@@ -253,13 +253,13 @@ public class DoublePairsTest{
 
 
         ev = new HandEvaluator(player1, communityCards);
-        ev.evaulateClassificationRank();
+        ev.evaluateClassificationRank();
 
         ev = new HandEvaluator(player2, communityCards);
-        ev.evaulateClassificationRank();
+        ev.evaluateClassificationRank();
 
         ev = new HandEvaluator(player3, communityCards);
-        ev.evaulateClassificationRank();
+        ev.evaluateClassificationRank();
 
         players = new ArrayList<>(List.of(player1, player2, player3));
         Utils.setWinners(players);
@@ -302,13 +302,13 @@ public class DoublePairsTest{
 
 
         ev = new HandEvaluator(player1, communityCards);
-        ev.evaulateClassificationRank();
+        ev.evaluateClassificationRank();
 
         ev = new HandEvaluator(player2, communityCards);
-        ev.evaulateClassificationRank();
+        ev.evaluateClassificationRank();
 
         ev = new HandEvaluator(player3, communityCards);
-        ev.evaulateClassificationRank();
+        ev.evaluateClassificationRank();
 
         players = new ArrayList<>(List.of(player1, player2, player3));
         Utils.setWinners(players);
@@ -361,13 +361,13 @@ public class DoublePairsTest{
 
 
         ev = new HandEvaluator(player1, communityCards);
-        ev.evaulateClassificationRank();
+        ev.evaluateClassificationRank();
 
         ev = new HandEvaluator(player2, communityCards);
-        ev.evaulateClassificationRank();
+        ev.evaluateClassificationRank();
 
         ev = new HandEvaluator(player3, communityCards);
-        ev.evaulateClassificationRank();
+        ev.evaluateClassificationRank();
 
         players = new ArrayList<>(List.of(player1, player2, player3));
         Utils.setWinners(players);

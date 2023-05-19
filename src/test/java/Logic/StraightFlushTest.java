@@ -46,13 +46,13 @@ public class StraightFlushTest{
 
 
         ev = new HandEvaluator(player1, communityCards);
-        ev.evaulateClassificationRank();
+        ev.evaluateClassificationRank();
 
         ev = new HandEvaluator(player2, communityCards);
-        ev.evaulateClassificationRank();
+        ev.evaluateClassificationRank();
 
         ev = new HandEvaluator(player3, communityCards);
-        ev.evaulateClassificationRank();
+        ev.evaluateClassificationRank();
 
 
         players = new ArrayList<>(List.of(player1, player2, player3));
@@ -94,13 +94,13 @@ public class StraightFlushTest{
 
 
         ev = new HandEvaluator(player1, communityCards);
-        ev.evaulateClassificationRank();
+        ev.evaluateClassificationRank();
 
         ev = new HandEvaluator(player2, communityCards);
-        ev.evaulateClassificationRank();
+        ev.evaluateClassificationRank();
 
         ev = new HandEvaluator(player3, communityCards);
-        ev.evaulateClassificationRank();
+        ev.evaluateClassificationRank();
 
 
         players = new ArrayList<>(List.of(player1, player2, player3));
@@ -142,13 +142,13 @@ public class StraightFlushTest{
 
 
         ev = new HandEvaluator(player1, communityCards);
-        ev.evaulateClassificationRank();
+        ev.evaluateClassificationRank();
 
         ev = new HandEvaluator(player2, communityCards);
-        ev.evaulateClassificationRank();
+        ev.evaluateClassificationRank();
 
         ev = new HandEvaluator(player3, communityCards);
-        ev.evaulateClassificationRank();
+        ev.evaluateClassificationRank();
 
 
         players = new ArrayList<>(List.of(player1, player2, player3));
@@ -190,13 +190,13 @@ public class StraightFlushTest{
 
 
         ev = new HandEvaluator(player1, communityCards);
-        ev.evaulateClassificationRank();
+        ev.evaluateClassificationRank();
 
         ev = new HandEvaluator(player2, communityCards);
-        ev.evaulateClassificationRank();
+        ev.evaluateClassificationRank();
 
         ev = new HandEvaluator(player3, communityCards);
-        ev.evaulateClassificationRank();
+        ev.evaluateClassificationRank();
 
 
         players = new ArrayList<>(List.of(player1, player2, player3));
@@ -235,10 +235,10 @@ public class StraightFlushTest{
 
 
         ev = new HandEvaluator(player1, communityCards);
-        ev.evaulateClassificationRank();
+        ev.evaluateClassificationRank();
 
         ev = new HandEvaluator(player2, communityCards);
-        ev.evaulateClassificationRank();
+        ev.evaluateClassificationRank();
 
 
         players = new ArrayList<>(List.of(player1, player2));

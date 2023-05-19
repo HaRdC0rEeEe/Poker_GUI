@@ -43,8 +43,8 @@ public class ChoicesPanel extends JPanel{
         dim.height = 400;
         setSize(dim);
 
-        raiseBtn = new JButton("Check/Raise");
-        foldBtn = new JButton("Fold");
+        raiseBtn = new JButton("Draw card/s");
+        foldBtn = new JButton("Execute tests");
         chipsLabel = new JLabel();
         timeLabel = new TimeLabel("");
 

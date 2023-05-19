@@ -70,9 +70,8 @@ public class ComparatorByResult implements Comparator<Player>{
         return 0;
     }
 
-    //compare the highest card first then second-highest card (including those at the table) - if every card is same, then it is a tie
-    //basicaly if players have identical hand with High card, it will always be a tie
-    //also if pot cannot be split evenly, leftover money goes to next round
+
+    //if players have identical hand with High card, it will always be a tie
     private int compareHighCards() {
         int FIRST = 0;
         int cmp = compareNthCards(FIRST);

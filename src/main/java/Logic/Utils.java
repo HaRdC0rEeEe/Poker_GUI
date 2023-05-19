@@ -6,9 +6,9 @@ import java.util.Collections;
 public class Utils{
     public static ArrayList<Player> winners;
 
+    //Method to evaluate winning player(s)
     public static void setWinners(ArrayList<Player> players) {
 
-        //System.out.println(players);
         players.sort(new ComparatorByResult());
         Collections.reverse(players);
         System.out.println("Sorted:");
@@ -27,8 +27,6 @@ public class Utils{
                 winners.remove(currentPlayer);
                 i--;
             }
-
-
         }
 
         winners.forEach(p -> p.setWinner(true));

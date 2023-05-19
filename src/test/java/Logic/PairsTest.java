@@ -41,10 +41,10 @@ public class PairsTest{
         player2.drawCard(new Card(CardEnums.cValue.THREE, CardEnums.cSymbol.CLUBS));
 
         ev = new HandEvaluator(player1, communityCards);
-        ev.evaulateClassificationRank();
+        ev.evaluateClassificationRank();
 
         ev = new HandEvaluator(player2, communityCards);
-        ev.evaulateClassificationRank();
+        ev.evaluateClassificationRank();
 
         players = new ArrayList<>(List.of(player1, player2));
         Utils.setWinners(players);
@@ -78,10 +78,10 @@ public class PairsTest{
         player2.drawCard(new Card(CardEnums.cValue.ACE, CardEnums.cSymbol.CLUBS));
 
         ev = new HandEvaluator(player1, communityCards);
-        ev.evaulateClassificationRank();
+        ev.evaluateClassificationRank();
 
         ev = new HandEvaluator(player2, communityCards);
-        ev.evaulateClassificationRank();
+        ev.evaluateClassificationRank();
 
         players = new ArrayList<>(List.of(player1, player2));
         Utils.setWinners(players);
@@ -115,10 +115,10 @@ public class PairsTest{
         player2.drawCard(new Card(CardEnums.cValue.KING, CardEnums.cSymbol.CLUBS));
 
         ev = new HandEvaluator(player1, communityCards);
-        ev.evaulateClassificationRank();
+        ev.evaluateClassificationRank();
 
         ev = new HandEvaluator(player2, communityCards);
-        ev.evaulateClassificationRank();
+        ev.evaluateClassificationRank();
 
         players = new ArrayList<>(List.of(player1, player2));
         Utils.setWinners(players);
@@ -152,10 +152,10 @@ public class PairsTest{
         player2.drawCard(new Card(CardEnums.cValue.KING, CardEnums.cSymbol.CLUBS));
 
         ev = new HandEvaluator(player1, communityCards);
-        ev.evaulateClassificationRank();
+        ev.evaluateClassificationRank();
 
         ev = new HandEvaluator(player2, communityCards);
-        ev.evaulateClassificationRank();
+        ev.evaluateClassificationRank();
 
         players = new ArrayList<>(List.of(player1, player2));
         Utils.setWinners(players);
@@ -189,10 +189,10 @@ public class PairsTest{
         player2.drawCard(new Card(CardEnums.cValue.SIX, CardEnums.cSymbol.CLUBS));
 
         ev = new HandEvaluator(player1, communityCards);
-        ev.evaulateClassificationRank();
+        ev.evaluateClassificationRank();
 
         ev = new HandEvaluator(player2, communityCards);
-        ev.evaulateClassificationRank();
+        ev.evaluateClassificationRank();
 
         players = new ArrayList<>(List.of(player1, player2));
         Utils.setWinners(players);
