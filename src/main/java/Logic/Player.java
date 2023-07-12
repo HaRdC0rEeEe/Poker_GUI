@@ -30,6 +30,7 @@ public class Player{
     private Card secondPair;
     private Card highestStraight;
     private boolean isWinner = false;
+
     public Player() {
         Random r = new Random();
         String[] poolOfNames = new String[]{"Amanda", "Peter", "Simon", "Arnošt", "Nicole", "Michael", "Valeria", "David"};
@@ -40,8 +41,8 @@ public class Player{
         cRank = ClassificationRank.HIGH_CARD;
     }
 
-    public Player(String name) {
-        this.name = name;
+    public Player(String NAME) {
+        name = NAME;
         cRank = ClassificationRank.HIGH_CARD;
         hand = new ArrayList<>();
     }

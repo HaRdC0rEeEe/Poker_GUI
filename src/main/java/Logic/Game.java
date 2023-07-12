@@ -236,7 +236,6 @@ public class Game{
 
     public void resetStatistics() {
         statistics.clear();
-        ;
     }
 
     //simple name input for MainPlayer or second player if that will be the case in future

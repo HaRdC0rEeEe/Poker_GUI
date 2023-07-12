@@ -12,8 +12,6 @@ public class ComparatorByResult implements Comparator<Player>{
     private Player p1;
     private Player p2;
 
-    //https://www.youtube.com/watch?v=PCPvJy6b4iA&ab_channel=truepokerdealer
-
     @Override
     public int compare(Player p1, Player p2) {
 
@@ -53,7 +51,7 @@ public class ComparatorByResult implements Comparator<Player>{
     }
 
     private int compareRoyalFlush() {
-        return p1.getcRank().compareTo(p2.getcRank());
+        return 0;
     }
 
     private int compareFlush() {

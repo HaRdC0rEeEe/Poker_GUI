@@ -11,8 +11,6 @@ public class Utils{
 
         players.sort(new ComparatorByResult());
         Collections.reverse(players);
-        System.out.println("Sorted:");
-        System.out.println(players);
         winners = new ArrayList<>(players);
 
 
