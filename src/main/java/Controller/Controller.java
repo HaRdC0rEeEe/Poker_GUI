@@ -86,7 +86,7 @@ public class Controller{
         choicesPanel.getFoldBtn().addActionListener(e -> {
             new Thread(() -> {
                 //executeTests(false, 1000);
-                executeTests(true, 1000);
+                executeTests(false, 100);
             }).start();
 
 
@@ -136,8 +136,7 @@ public class Controller{
         String tmp = "";
         for(ClassificationRank cv : game.getStatistics().keySet()){
 
-            double percentage = (game.getStatistics().get(cv) / 100.0);
-            percentage *= numOfTests / 100.0;
+            double percentage = (game.getStatistics().get(cv) * 100.0 / numOfTests) ;
 
             String decreaseDecimals;
             if(cv.getValue() >= ClassificationRank.FOURS.getValue())
