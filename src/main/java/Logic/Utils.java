@@ -28,7 +28,6 @@ public class Utils{
         }
 
         winners.forEach(p -> p.setWinner(true));
-        System.out.println("WINNERS:");
-        System.out.println(winners + "\n");
+
     }
 }
